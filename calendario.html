@@ -8,13 +8,12 @@
   <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
 
-  <script defer src="js/giorni.js"></script>
   <script defer src="js/script.js"></script>
 </head>
 
 <body class="calendar">
 
-  <!-- Messaggio di benvenuto -->
+  <!-- 0️⃣ Benvenuto -->
   <p id="benvenuto" class="benvenuto"></p>
 
   <script>
@@ -22,17 +21,17 @@
     document.getElementById("benvenuto").textContent = `🎅 Bentornato, ${nome}!`;
   </script>
 
-  <!-- Immagine superiore -->
+  <!-- 1️⃣ Immagine superiore -->
   <section class="top-image">
     <img src="immagini/copertina/cover.png" alt="Calendario dell’Avvento" class="home-top-img">
   </section>
 
-  <!-- Griglia 24 giorni -->
+  <!-- 2️⃣ Griglia dei giorni -->
   <section class="calendar-section">
-    <div class="calendar-grid"></div>
+    <div class="calendar-grid" id="calendar-grid"></div>
   </section>
 
-  <!-- Popup -->
+  <!-- 3️⃣ Popup -->
   <div id="popup" class="popup hidden">
     <div class="popup-content">
       <p id="popup-text"></p>
@@ -40,10 +39,9 @@
     </div>
   </div>
 
-  <!-- SEZIONE BOTTONI IN BASSO -->
+  <!-- 4️⃣ Bottone cambia nome (in basso) -->
   <section class="bottom-buttons">
-      <a href="index.html" class="btn-home-return">🏠 Torna alla Home</a>
-      <button onclick="cambiaNome()" class="btn-change-name">✏️ Cambia nome</button>
+    <button onclick="cambiaNome()" class="btn-change-name">✏️ Cambia nome</button>
   </section>
 
   <script>
