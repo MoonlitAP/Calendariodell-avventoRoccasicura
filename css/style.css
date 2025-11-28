@@ -149,3 +149,36 @@ body.home {
     padding: 10px 26px;
   }
 }
+
+
+/* --- BOTTONI IN BASSO --- */
+.bottom-buttons {
+  text-align: center;
+  margin-top: 30px;
+  margin-bottom: 50px;
+}
+
+.btn-home-return,
+.btn-change-name {
+  display: block;
+  margin: 10px auto;
+  background: #f3e4e4;
+  color: #000;
+  padding: 10px 25px;
+  border-radius: 25px;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 1em;
+  transition: 0.3s;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  border: none;
+  cursor: pointer;
+}
+
+.btn-home-return:hover,
+.btn-change-name:hover {
+  background: #b71c1c;
+  color: white;
+}
+
+
