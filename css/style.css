@@ -1,0 +1,73 @@
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(to bottom, #b30000, #600000);
+    color: white;
+}
+
+.home-container {
+    text-align: center;
+    margin-top: 40px;
+}
+
+.titolo-home {
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 25px;
+}
+
+.img-copertina {
+    width: 80%;
+    max-width: 360px;
+    border-radius: 15px;
+    box-shadow: 0 0 15px rgba(255,255,255,0.3);
+    margin-bottom: 30px;
+}
+
+.btn-home, .btn-cambia {
+    background: white;
+    color: #b30000;
+    border: none;
+    padding: 15px 30px;
+    border-radius: 10px;
+    font-size: 18px;
+    cursor: pointer;
+    margin-top: 15px;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.btn-home:hover, .btn-cambia:hover {
+    transform: scale(1.05);
+    background: #ffe5e5;
+}
+
+.btn-cambia {
+    display: block;
+    margin: 20px auto;
+}
+
+
+/* 🌟 RESPONSIVE PER SMARTPHONE */
+@media (max-width: 768px) {
+
+    .img-copertina {
+        width: 90%;
+        max-width: 260px;
+    }
+
+    .titolo-home {
+        font-size: 26px;
+    }
+
+    .btn-home, .btn-cambia {
+        width: 80%;
+        font-size: 16px;
+        padding: 12px 20px;
+    }
+
+    .home-container {
+        margin-top: 20px;
+        padding: 10px;
+    }
+}
