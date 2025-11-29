@@ -224,7 +224,7 @@ body.home {
 
 /* =====================================================================
    🎁 CALENDARIO (calendario.html)
-   >>> VERSIONE CLEAN COME RICHIESTO <<<
+   Versione finale: clean, elegante, identica allo screenshot
 ===================================================================== */
 
 body.calendar {
@@ -232,20 +232,19 @@ body.calendar {
   color: white;
   text-align: center;
   padding-bottom: 70px;
+  font-family: 'Ubuntu', sans-serif;
 }
 
-/* SCRITTA DI BENVENUTO — PIÙ GRANDE E LEGIBILE */
+/* SCRITTA DI BENVENUTO */
 #benvenuto {
-  margin-top: 20px;
-  font-size: 1.9em;
+  margin-top: 25px;
+  font-size: 2em;
   font-weight: 700;
-  text-align: center;
   color: #fff;
   text-shadow: 0 0 8px rgba(0,0,0,0.4);
-  letter-spacing: 1px;
-  margin-bottom: 15px;
 }
 
+/* IMMAGINE SUPERIORE */
 .home-top-img {
   display: block;
   width: 95%;
@@ -253,201 +252,111 @@ body.calendar {
   margin: 25px auto 35px auto;
   filter: brightness(0.98);
   border-radius: 18px;
+  box-shadow: 0 4px 18px rgba(0,0,0,0.4);
 }
 
-/* === GRIGLIA 24 CASELLE (3 colonne fisse) === */
+
+/* =====================================================================
+   🎄 GRIGLIA 3×8 — riquadri bianchi come screenshot
+===================================================================== */
+
 .calendar-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 15px;
+  gap: 25px;
   width: 95%;
-  max-width: 900px;
+  max-width: 1000px;
   margin: auto;
 }
 
-/* === CASELLE SOLO IMMAGINE — ZERO CORNICI === */
+/* BOX GIORNI */
 .day-box {
-  background: none !important;
-  padding: 0 !important;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 12px;
   cursor: pointer;
-  transition: transform .2s;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.35);
+  transition: transform .25s;
 }
 
 .day-box:hover {
-  transform: scale(1.03);
+  transform: scale(1.04);
 }
 
+/* IMMAGINI INTERNE (quelle con la cornice disegnata) */
 .day-img {
   width: 100%;
   height: auto;
+  border-radius: 12px;
+  object-fit: cover;
 
-  object-fit: contain;
-
-  /* RIMUOVO TUTTE LE COSE CHE NON VUOI */
+  /* niente padding, niente bordi extra */
   border: none !important;
-  border-radius: 0 !important;
-  padding: 0 !important;
-  margin: 0 !important;
   background: none !important;
-  box-shadow: none !important;
 }
 
-/* Rimuove completamente i numeri */
+/* NUMERO NASCOSTO */
 .day-number {
   display: none !important;
 }
 
-/* === CASELLA 25 — IDENTICA ALLE ALTRE === */
+
+/* =====================================================================
+   ⭐ CASELLA 25 – CENTRATA NELLA SUA RIGA
+===================================================================== */
+
 .special-25 {
-  background: none !important;
-  margin-top: 20px;
-  padding: 0 !important;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.35);
   cursor: pointer;
-  transition: transform .2s;
+  transition: transform .25s;
+
+  grid-column: 2 / 3;   /* CENTRA IL GIORNO 25 */
 }
 
 .special-25:hover {
-  transform: scale(1.03);
+  transform: scale(1.05);
 }
 
 .special-25 .day-img {
-  width: 100%;
-  height: auto;
-  object-fit: contain;
-  border: none !important;
-  box-shadow: none !important;
-}
-
-.special-25 .day-number {
-  display: none !important;
-}
-
-
-
-/* =====================================================================
-   ⏳ POPUP CONTO ALLA ROVESCIA
-===================================================================== */
-
-.popup {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.55);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 200;
-}
-
-.hidden {
-  display: none !important;
-}
-
-.popup-content {
-  background: white;
-  color: #7b0412;
-  padding: 30px;
-  border-radius: 25px;
-  max-width: 350px;
-  text-align: center;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.4);
-}
-
-.countdown {
-  font-size: 1.7em;
-  font-weight: bold;
-  margin: 15px 0;
-}
-
-#close-popup {
-  background: #7b0412;
-  color: white;
-  padding: 12px 25px;
   border-radius: 12px;
-  border: none;
-  cursor: pointer;
-  font-weight: bold;
-  margin-top: 15px;
 }
-
-#close-popup:hover {
-  background: #b71c1c;
-}
-
 
 
 /* =====================================================================
-   📄 PAGINE SINGOLO GIORNO (giornate/1.html → 24.html)
+   📱 VERSIONE MOBILE PERFETTA
 ===================================================================== */
-
-body.giorno {
-  background: #7b0412;
-  color: white;
-  text-align: center;
-  padding: 30px 10px;
-}
-
-.contenuto-giorno {
-  background: #fff2f2;
-  max-width: 800px;
-  margin: auto;
-  padding: 20px;
-  border-radius: 20px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.4);
-}
-
-.titolo-giorno {
-  font-size: 2.2em;
-  color: #7b0412;
-  margin-bottom: 10px;
-}
-
-.img-giorno {
-  max-width: 600px;
-  width: 100%;
-  border-radius: 15px;
-  margin: 15px 0;
-}
-
-.testo-giorno {
-  font-size: 1.25em;
-  color: #7b0412;
-  margin-bottom: 25px;
-  line-height: 1.55;
-}
-
-.btn-return-calendar {
-  display: inline-block;
-  padding: 10px 25px;
-  background: #f3e4e4;
-  color: #000;
-  border-radius: 20px;
-  text-decoration: none;
-  font-weight: bold;
-  transition: .3s;
-}
-
-.btn-return-calendar:hover {
-  background: #b71c1c;
-  color: white;
-}
-
-
-
-
 
 @media (max-width: 768px) {
 
   #benvenuto {
-    font-size: 1.5em;
-    margin-top: 10px;
+    font-size: 1.6em;
   }
 
   .home-top-img {
     width: 100%;
-    max-width: 500px;
+    max-width: 550px;
     margin: 20px auto 30px auto;
   }
+
+  .calendar-grid {
+    gap: 20px;
+  }
+
+  .day-box {
+    padding: 10px;
+  }
+
+  .special-25 {
+    grid-column: 1 / 4;   /* su mobile la centri tutta */
+    max-width: 70%;
+    margin: 0 auto;
+  }
 }
+
+
 
 
 
