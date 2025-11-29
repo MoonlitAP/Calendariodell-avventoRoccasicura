@@ -221,12 +221,13 @@ body.home {
 
 
 
-
 /* =====================================================================
    🎁 CALENDARIO (calendario.html)
    Versione finale: clean, elegante, identica allo screenshot
 ===================================================================== */
-/* === CALENDARIO === */
+
+
+/* === CALENDARIO GENERAL === */
 body.calendar {
   margin: 0;
   background-color: #7b0412;
@@ -235,7 +236,11 @@ body.calendar {
   overflow-x: hidden;
 }
 
-/* Immagine superiore */
+
+/* =====================================================================
+   🌲 IMMAGINE SUPERIORE (BANNER)
+===================================================================== */
+
 .top-image {
   text-align: center;
   background-color: #7b0412;
@@ -252,7 +257,11 @@ body.calendar {
   border-radius: 8px;
 }
 
-/* Griglia principale */
+
+/* =====================================================================
+   🧩 GRIGLIA CALENDARIO
+===================================================================== */
+
 .calendar-section {
   display: flex;
   justify-content: center;
@@ -267,7 +276,11 @@ body.calendar {
   justify-items: center;
 }
 
-/* Casella giorno */
+
+/* =====================================================================
+   📦 CASELLA GIORNO
+===================================================================== */
+
 .day-box {
   width: 100%;
   aspect-ratio: 4 / 5;
@@ -280,22 +293,16 @@ body.calendar {
   transition: transform 0.3s ease;
 }
 
-/* CASSELLA 25 — posizionata sotto la 23, colonna centrale */
-.day-box.g25 {
-  grid-column: 2;
-  grid-row: 9;
-  transform: scale(1.15);
-  border: 3px solid #ffd700;
-  box-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
-}
-
-
 .day-box:hover {
   transform: scale(1.05);
   background-color: rgba(255,255,255,0.2);
 }
 
-/* Immagine */
+
+/* =====================================================================
+   🖼️ IMMAGINE INTERNA DEL GIORNO
+===================================================================== */
+
 .day-image {
   width: 100%;
   height: 100%;
@@ -303,16 +310,11 @@ body.calendar {
   border-radius: 10px;
 }
 
-/* Giorno 25 – centrato e speciale */
-.day-special {
-  border: 3px solid #ffd700;
-  transform: scale(1.15);
-  box-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
-  justify-self: center;
-}
 
+/* =====================================================================
+   ⏳ POPUP BLOCCO GIORNI FUTURI
+===================================================================== */
 
-/* Popup */
 .popup {
   position: fixed;
   top: 0;
@@ -360,7 +362,11 @@ body.calendar {
   background-color: #b71c1c;
 }
 
-/* Mobile */
+
+/* =====================================================================
+   📱 VERSIONE MOBILE
+===================================================================== */
+
 @media (max-width: 450px) {
 
   .calendar-grid {
@@ -372,8 +378,8 @@ body.calendar {
 
   .day-box {
     width: 100%;
-    max-width: none;
     aspect-ratio: 4 / 5;
+    max-width: none;
   }
 
   .day-image {
@@ -382,7 +388,3 @@ body.calendar {
     object-fit: cover;
   }
 }
-
-
-
-
