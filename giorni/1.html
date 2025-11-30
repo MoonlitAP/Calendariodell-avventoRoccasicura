@@ -263,12 +263,20 @@
         `🎁 ${nome} | Punti: ${score} | ⏱️ ${timeLeft}s`;
     }
 
-    function gameLoop() {
-      moveSanta();
-      checkCollisions();
-      draw();
-      if (timeLeft > 0) requestAnimationFrame(gameLoop);
-    }
+function gameLoop() {
+
+  // 🔥 Nasconde la classifica appena riparte il gioco
+  document.getElementById("popup-classifica").style.display = "none";
+
+  moveSanta();
+  checkCollisions();
+  draw();
+  
+  if (timeLeft > 0) 
+      requestAnimationFrame(gameLoop);
+}
+
+
 
     /* FINE GIOCO */
     function endGame() {
@@ -314,6 +322,7 @@
 
 </body>
 </html>
+
 
 
 
