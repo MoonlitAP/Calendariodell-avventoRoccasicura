@@ -14,7 +14,35 @@
 
 <body class="home">
 
-    <!-- IMMAGINE CENTRALE -->
+    <!-- ============================
+         POPUP ROSSO NATALIZIO CONSENSO
+    ================================== -->
+    <div id="consent-popup" class="popup hidden">
+        <div class="popup-box">
+            <h2>🎄 Benvenuto nel Calendario dell’Avvento 2025 🎄</h2>
+
+            <p>
+                Per continuare, ti informiamo che questo sito utilizza solo funzioni tecniche
+                necessarie (localStorage) per migliorare la tua esperienza.
+                Nessun dato personale viene raccolto o condiviso.
+            </p>
+
+            <p>
+                Puoi leggere i nostri:<br>
+                <a href="tem_cond/terms.html" target="_blank">📄 Termini e Condizioni</a><br>
+                <a href="privacy/privacy.html" target="_blank">🔒 Informativa Privacy</a> (in arrivo)
+            </p>
+
+            <button id="accept-btn">Accetto</button>
+        </div>
+    </div>
+
+
+
+
+    <!-- ============================
+         IMMAGINE CENTRALE + ENTRA
+    ================================== -->
     <div class="overlay">
         <img src="immagini/copertina/cover.png" alt="Calendario dell’Avvento" class="cover-img">
 
@@ -35,8 +63,27 @@
         </div>
     </div>
 
+
     <!-- SCRIPT -->
     <script src="js/script.js"></script>
 
+    <script>
+        // ===== POPUP CONSENSO =====
+        document.addEventListener("DOMContentLoaded", () => {
+            const popup = document.getElementById("consent-popup");
+            const acceptBtn = document.getElementById("accept-btn");
+
+            if (!localStorage.getItem("consentAccepted")) {
+                popup.classList.remove("hidden");
+            }
+
+            acceptBtn.addEventListener("click", () => {
+                localStorage.setItem("consentAccepted", "yes");
+                popup.classList.add("hidden");
+            });
+        });
+    </script>
+
 </body>
 </html>
+
