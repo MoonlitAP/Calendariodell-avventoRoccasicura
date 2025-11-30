@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const mese = 11; // dicembre (0 = gennaio → 11 = dicembre)
 
   /* ============================================================
-     📦 CREA LE CASELLE (1 → 24) — NIENTE GIORNO 25
+     📦 CREA LE CASELLE (1 → 24)
   ============================================================ */
   for (let i = 1; i <= 24; i++) {
     const dataGiorno = new Date(anno, mese, i);
@@ -19,7 +19,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const box = document.createElement("div");
     box.classList.add("day-box");
 
-    // Immagine interna
     const img = document.createElement("img");
     img.src = `immagini/giorni/${i}.png`;
     img.alt = `Giorno ${i}`;
@@ -32,7 +31,8 @@ document.addEventListener("DOMContentLoaded", () => {
       clearInterval(countdownInterval);
 
       if (aperto) {
-        window.location.href = `giornate/${i}.html`;
+        // ✅ percorso corretto
+        window.location.href = `giorni/${i}.html`;
       } else {
         mostraPopup(dataGiorno);
       }
@@ -40,7 +40,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     grid.appendChild(box);
   }
-
 
   /* ============================================================
      ⏳ MOSTRA POPUP COUNTDOWN
@@ -54,9 +53,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 1000);
   }
 
-
   /* ============================================================
-     ⏳ AGGIORNA IL COUNTDOWN OGNI SECONDO
+     ⏳ AGGIORNA IL COUNTDOWN
   ============================================================ */
   function aggiornaCountdown(targetDate) {
     const now = new Date();
@@ -78,7 +76,6 @@ document.addEventListener("DOMContentLoaded", () => {
       `${String(minuti).padStart(2, "0")} m : ${String(secondi).padStart(2, "0")} s`;
   }
 
-
   /* ============================================================
      ❌ CHIUDI POPUP
   ============================================================ */
@@ -87,5 +84,7 @@ document.addEventListener("DOMContentLoaded", () => {
     clearInterval(countdownInterval);
   });
 });
+
+
 
 
