@@ -167,6 +167,7 @@
       }
     }
 
+    // --- MOUSE ---
     canvas.addEventListener("mousemove", e => {
       if (e.buttons > 0) {
         const rect = canvas.getBoundingClientRect();
@@ -174,13 +175,14 @@
       }
     });
 
-    let touchX = null;
+    // --- 🚀 NUOVO MOVIMENTO TOUCH SUPER FLUIDO ---
     canvas.addEventListener("touchmove", e => {
-      const delta = e.touches[0].clientX - (touchX || e.touches[0].clientX);
-      santa.x += delta * 0.2;
-      touchX = e.touches[0].clientX;
-    });
-    canvas.addEventListener("touchend", () => { touchX = null; });
+      e.preventDefault();
+      const rect = canvas.getBoundingClientRect();
+      santa.x = e.touches[0].clientX - rect.left - santa.w / 2;
+    }, { passive: false });
+
+    canvas.addEventListener("touchend", () => { });
 
     // 🕓 Timer
     let score = 0;
@@ -323,6 +325,7 @@
 
 </body>
 </html>
+
 
 
 
