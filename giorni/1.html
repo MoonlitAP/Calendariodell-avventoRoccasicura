@@ -10,7 +10,7 @@
     body {
       margin: 0;
       background-color: #7b0412;
-      overflow: hidden;
+      overflow-x: hidden;
       font-family: 'Ubuntu', sans-serif;
       color: #fff;
       text-align: center;
@@ -22,7 +22,7 @@
     }
 
     .info {
-      position: absolute;
+      position: fixed;
       bottom: 20px;
       left: 50%;
       transform: translateX(-50%);
@@ -31,6 +31,7 @@
       border-radius: 12px;
       font-size: 1.1em;
       border: 1px solid #f5d97c;
+      z-index: 20;
     }
 
     canvas {
@@ -42,53 +43,65 @@
       touch-action: none;
     }
 
-    .boom {
-      position: absolute;
-      font-size: 2em;
-      color: #ff5555;
-      animation: fadeBoom 0.8s ease-out forwards;
+    /* POPUP CLASSIFICA */
+    #fine {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.65);
+      backdrop-filter: blur(4px);
+      z-index: 9999;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
 
-    @keyframes fadeBoom {
-      from { opacity: 1; transform: translateY(-20px) scale(1); }
-      to { opacity: 0; transform: translateY(-80px) scale(1.8); }
+    .classifica-box {
+      background: #fffaf2;
+      padding: 25px;
+      border-radius: 20px;
+      width: 90%;
+      max-width: 450px;
+      border: 2px solid #ffd700;
+      color: #400000;
+      animation: popup 0.4s ease-out;
+    }
+
+    @keyframes popup {
+      from { transform: scale(0.7); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .classifica-box table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+
+    .classifica-box th, .classifica-box td {
+      padding: 8px;
+      border-bottom: 1px solid #d7bb5f;
+      text-align: center;
     }
 
     .btn-back {
       display: inline-block;
       margin-top: 20px;
-      background-color: #f3e4e4;
-      color: #000;
+      background-color: #7b0412;
+      color: #fff;
       text-decoration: none;
       padding: 12px 30px;
       border-radius: 30px;
       font-weight: bold;
-      transition: all 0.3s ease;
+      transition: 0.3s;
     }
 
     .btn-back:hover {
-      background-color:#7b0412;
-      color: white;
-      transform: scale(1.05);
-    }
-
-    .leaderboard {
-      margin-top: 15px;
-      background-color: rgba(255,255,255,0.1);
-      padding: 15px;
-      border-radius: 10px;
-      width: fit-content;
-      margin-inline: auto;
-    }
-
-    .leaderboard table {
-      border-collapse: collapse;
-      color: white;
-    }
-
-    .leaderboard th, .leaderboard td {
-      border-bottom: 1px solid #f5d97c;
-      padding: 6px 12px;
+      background-color: #ffd700;
+      color: #000;
     }
   </style>
 </head>
@@ -100,34 +113,20 @@
   <canvas id="game"></canvas>
   <div class="info" id="info">🎁 Punteggio: 0 | ⏱️ Tempo: 60s</div>
 
-<div id="fine" style="display:none;">
-  <h2 id="messaggio"></h2>
-
-  <div id="popup-classifica" class="popup-classifica">
+  <!-- POPUP CLASSIFICA -->
+  <div id="fine">
     <div class="classifica-box">
-      <h3>🏆 Classifica Completa</h3>
+      <h2 id="messaggio"></h2>
 
+      <h3>🏆 Classifica Completa</h3>
       <table id="score-table">
         <tr><th>Nome</th><th>Punti</th></tr>
       </table>
 
-      <a href="../calendario.html" class="btn-back" style="margin-top:25px;">
+      <a href="../calendario.html" class="btn-back">
         ⬅ Torna al Calendario
       </a>
     </div>
-  </div>
-</div>
-
-
-
-    <div class="leaderboard" id="leaderboard">
-      <h3>🏆 Classifica locale</h3>
-      <table id="score-table">
-        <tr><th>Nome</th><th>Punti</th></tr>
-      </table>
-    </div>
-
-    <a href="../calendario.html" class="btn-back">⬅ Torna al Calendario</a>
   </div>
 
   <script>
@@ -135,7 +134,7 @@
     const canvas = document.getElementById("game");
     const ctx = canvas.getContext("2d");
 
-    // 🪟 Adatta per PC e smartphone
+    /* RESPONSIVE CANVAS */
     function resizeCanvas() {
       if (window.innerWidth < 700) {
         canvas.width = window.innerWidth - 20;
@@ -148,20 +147,12 @@
     resizeCanvas();
     window.addEventListener("resize", resizeCanvas);
 
-    // 🎅 Babbo Natale
-    const santa = { 
-      x: 100, 
-      y: canvas.height - 120, 
-      w: 70, 
-      h: 90, 
-      vy: 0, 
-      jumping: false, 
-      speed: 6 
-    };
+    /* SANTA */
+    const santa = { x: 100, y: canvas.height - 120, w: 70, h: 90, vy: 0, jumping: false, speed: 6 };
     const santaImg = new Image();
     santaImg.src = "../img/babbo.png";
 
-    // 🎁 Regali e 💣 Bombe
+    /* OGGETTI */
     const giftImg = new Image();
     giftImg.src = "../img/gift.png";
 
@@ -174,8 +165,8 @@
     document.addEventListener("keydown", e => keys[e.key] = true);
     document.addEventListener("keyup", e => keys[e.key] = false);
 
-    canvas.addEventListener("mousedown", jump);
     canvas.addEventListener("touchstart", jump);
+    canvas.addEventListener("mousedown", jump);
 
     function jump() {
       if (!santa.jumping) {
@@ -184,24 +175,13 @@
       }
     }
 
-    // --- MOUSE ---
-    canvas.addEventListener("mousemove", e => {
-      if (e.buttons > 0) {
-        const rect = canvas.getBoundingClientRect();
-        santa.x = e.clientX - rect.left - santa.w / 2;
-      }
-    });
-
-    // --- 🚀 NUOVO MOVIMENTO TOUCH SUPER FLUIDO ---
     canvas.addEventListener("touchmove", e => {
       e.preventDefault();
       const rect = canvas.getBoundingClientRect();
-      santa.x = e.touches[0].clientX - rect.left - santa.w / 2;
+      santa.x = e.touches[0].clientX - rect.left - santa.w/2;
     }, { passive: false });
 
-    canvas.addEventListener("touchend", () => { });
-
-    // 🕓 Timer
+    /* TIMER */
     let score = 0;
     let timeLeft = 60;
 
@@ -215,12 +195,12 @@
       }, 1000);
     }
 
-    // 🎲 Regali e bombe
+    /* OGGETTI CASUALI */
     function spawnObject() {
       const isBomb = Math.random() < 0.25;
       const obj = {
         x: Math.random() * (canvas.width - 40),
-        y: canvas.height - 160 - Math.random() * 100,
+        y: canvas.height - 160 - Math.random()*100,
         size: 40,
         type: isBomb ? "bomb" : "gift",
         collected: false
@@ -229,9 +209,7 @@
 
       setTimeout(() => {
         obj.fade = true;
-        setTimeout(() => {
-          objects = objects.filter(o => o !== obj);
-        }, 400);
+        setTimeout(() => objects = objects.filter(o => o !== obj), 300);
       }, 2000);
     }
     setInterval(spawnObject, 1500);
@@ -239,7 +217,6 @@
     function moveSanta() {
       if (keys["ArrowLeft"]) santa.x -= santa.speed;
       if (keys["ArrowRight"]) santa.x += santa.speed;
-      if (keys[" "] && !santa.jumping) jump();
 
       santa.y += santa.vy;
       santa.vy += 0.6;
@@ -254,16 +231,6 @@
       if (santa.x + santa.w > canvas.width) santa.x = canvas.width - santa.w;
     }
 
-    function boomEffect(x, y) {
-      const boom = document.createElement("div");
-      boom.textContent = "💥 -5";
-      boom.classList.add("boom");
-      boom.style.left = `${x}px`;
-      boom.style.top = `${y}px`;
-      document.body.appendChild(boom);
-      setTimeout(() => boom.remove(), 800);
-    }
-
     function checkCollisions() {
       objects.forEach(o => {
         if (!o.collected &&
@@ -271,11 +238,11 @@
             santa.x + santa.w > o.x &&
             santa.y < o.y + o.size &&
             santa.y + santa.h > o.y) {
-          
+
           o.collected = true;
 
           if (o.type === "gift") score += 10;
-          else { score -= 5; boomEffect(santa.x + 50, santa.y); }
+          else score -= 5;
 
           objects = objects.filter(x => x !== o);
         }
@@ -292,7 +259,8 @@
         ctx.globalAlpha = 1;
       });
 
-      document.getElementById("info").textContent = `🎁 ${nome} | Punti: ${score} | ⏱️ ${timeLeft}s`;
+      document.getElementById("info").textContent =
+        `🎁 ${nome} | Punti: ${score} | ⏱️ ${timeLeft}s`;
     }
 
     function gameLoop() {
@@ -302,9 +270,12 @@
       if (timeLeft > 0) requestAnimationFrame(gameLoop);
     }
 
-    // 🏁 Fine gioco + classifica
+    /* FINE GIOCO */
     function endGame() {
-      document.getElementById("fine").style.display = "block";
+      canvas.style.display = "none";
+      document.getElementById("info").style.display = "none";
+
+      document.getElementById("fine").style.display = "flex";
       document.getElementById("messaggio").textContent =
         `🎉 Bravo ${nome}! Hai totalizzato ${score} punti!`;
 
@@ -312,6 +283,7 @@
       mostraClassifica();
     }
 
+    /* CLASSIFICA */
     function salvaPunteggio(nome, punti) {
       const key = "punteggi_giorno1";
       let punteggi = JSON.parse(localStorage.getItem(key)) || [];
@@ -327,7 +299,7 @@
 
       table.innerHTML = "<tr><th>Nome</th><th>Punti</th></tr>";
 
-      punteggi.slice(0, 10).forEach(p => {
+      punteggi.forEach(p => {
         const row = document.createElement("tr");
         row.innerHTML = `<td>${p.nome}</td><td>${p.punti}</td>`;
         table.appendChild(row);
@@ -342,8 +314,6 @@
 
 </body>
 </html>
-
-
 
 
 
