@@ -13,6 +13,9 @@
   <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-database-compat.js"></script>
 
   <style>
+  /* =======================================================
+     🎨 STILE GENERALE
+  ======================================================== */
     body {
       margin: 0;
       background-color: #7b0412;
@@ -22,12 +25,18 @@
       overflow-x: hidden;
     }
 
-    h1 { color: #ffd700; margin-top: 10px; }
+    h1 { 
+      color: #ffd700; 
+      margin-top: 10px; 
+    }
 
+  /* =======================================================
+     🖼️ CANVAS – AREA DI GIOCO
+  ======================================================== */
     canvas {
       display: none;
       margin: 20px auto 0;
-      background: url("../img/gioco1_sfondo.png") center/cover no-repeat;
+      background: url("../img/sfondo_bosco.jpg") center/cover no-repeat;
       border: 3px solid #f5d97c;
       border-radius: 10px;
     }
@@ -46,7 +55,9 @@
       z-index: 30;
     }
 
-    /* POPUP */
+  /* =======================================================
+     🏁 POPUP FINALE
+  ======================================================== */
     #fine {
       position: fixed;
       top: 0; left: 0;
@@ -85,10 +96,13 @@
       color: #fff;
       background: #7b0412;
       transition: .3s;
+      display: inline-block;
     }
     .btn:hover { background: #ffd700; color: #000; }
 
-    /* START SCREEN */
+  /* =======================================================
+     ▶️ SCHERMATA INIZIALE
+  ======================================================== */
     #start-screen {
       position: fixed;
       top: 0; left: 0;
@@ -110,6 +124,7 @@
       border: 2px solid #ffd700;
       color: #400000;
       text-align: center;
+      line-height: 1.5;
     }
 
     .start-btn {
@@ -125,10 +140,9 @@
     }
     .start-btn:hover { background: #ffd700; color: #000; }
 
-    table { width: 100%; margin-top: 15px; }
-    th, td { padding: 8px; text-align: center; border-bottom: 1px solid #d7bb5f; }
-
-    /* ❄️ NEVE */
+  /* =======================================================
+     ❄️ NEVE
+  ======================================================== */
     .snowflake {
       position: fixed;
       top: -10px;
@@ -150,22 +164,29 @@
 
 <h1>🎄 Giorno 2 – Reindeer Runner</h1>
 
-<!-- START SCREEN -->
+<!-- =======================================================
+     ▶️ SCHERMATA INIZIALE CON ISTRUZIONI
+======================================================= -->
 <div id="start-screen">
   <div class="start-box">
-    <h2>🦌 Inizia il Gioco!</h2>
-    <p>Tieni premuto per restare in aria!<br>
-       Dopo 5 secondi apparirà una nuvola che ti farà scendere.</p>
+    <p>
+    🌲 Evita gli alberi e supera il tuo record!<br>
+    🦌 Aiuta la renna a correre nel bosco!<br>
+    • Salta e tieni premuto per volare un po’
+    </p>
 
     <button id="btn-start" class="start-btn">▶️ INIZIA</button>
     <button id="btn-top10" class="start-btn" style="background:#b8860b;">🏆 CLASSIFICA</button>
   </div>
 </div>
 
+<!-- AREA DI GIOCO -->
 <canvas id="game"></canvas>
+
+<!-- INFO IN GAME -->
 <div class="info" id="info">Distanza: 0m</div>
 
-<!-- POPUP -->
+<!-- POPUP FINALE -->
 <div id="fine">
   <div class="classifica-box">
     <h2 id="messaggio"></h2>
@@ -176,12 +197,21 @@
     </table>
 
     <button id="retry-btn" class="btn">🔄 Riprova</button>
-    <a href="../calendario.html" class="btn">⬅ Torna al Calendario</a>
+    <a href="../calendario.html" class="btn">⬅ Calendario</a>
   </div>
 </div>
 
+<!-- MUSICA -->
+<audio id="musica" loop>
+  <source src="../audio/jingle_bells_instrumental.mp3" type="audio/mpeg">
+</audio>
+
 <script>
-/* FIREBASE */
+
+
+/* =======================================================
+   🔥 FIREBASE – CONFIGURAZIONE DATABASE
+======================================================= */
 firebase.initializeApp({
   apiKey: "AIzaSyBrI1yThI6zmnYwKE4OHbS8vhrUPrMsnsk",
   authDomain: "calendarioroccasicura.firebaseapp.com",
@@ -193,23 +223,44 @@ firebase.initializeApp({
 });
 const db = firebase.database();
 
-/* NOME MASCHERATO */
+/* =======================================================
+   🎭 NOME MASCHERATO – GENERAZIONE USERNAME
+======================================================= */
 const nomeReale = localStorage.getItem("utente") || "Ospite";
-const nomeMascherato = nomeReale[0] + Math.floor(Math.random()*900+100) + nomeReale.slice(1);
+const nomeMascherato =
+  nomeReale[0] + Math.floor(Math.random()*900+100) + nomeReale.slice(1);
 
-/* CANVAS */
+/* =======================================================
+   🖼️ CANVAS – MISURE E RESPONSIVE
+======================================================= */
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
 
 function resizeCanvas() {
-  canvas.width = (window.innerWidth < 700) ? window.innerWidth - 20 : 900;
-  canvas.height = (window.innerWidth < 700) ? window.innerHeight * 0.55 : 500;
+  if (window.innerWidth < 700) {
+    canvas.width = window.innerWidth - 20;
+    canvas.height = window.innerHeight * 0.55;
+  } else {
+    canvas.width = 900;
+    canvas.height = 500;
+  }
 }
 resizeCanvas();
 window.addEventListener("resize", resizeCanvas);
 
-/* RENNA */
-const renna = {
+/* =======================================================
+   🦌 SPRITES – RENNA, ALBERO E GRAFICA
+======================================================= */
+const rennaImg = new Image();
+rennaImg.src = "../img/renna.png";
+
+const alberoImg = new Image();
+alberoImg.src = "../img/albero.png";
+
+/* =======================================================
+   🎮 VARIABILI DI GIOCO – FISICA, ENDLESS MODE, STATI
+======================================================= */
+let renna = {
   x: 120,
   y: canvas.height - 150,
   w: 110,
@@ -218,36 +269,65 @@ const renna = {
   jumping: false
 };
 
-const rennaImg = new Image();
-rennaImg.src = "../img/renna.png";
-
-const alberoImg = new Image();
-alberoImg.src = "../img/albero.png";
-
 let ostacoli = [];
 let distanza = 0;
-
-/* ENDLESS MODE */
 let giocoTerminato = false;
 
-/* SALTO LUNGO */
+/* SALTO PROLUNGATO */
 let saltoLungo = false;
 let tempoInAria = 0;
+
+/* NUVOLETTA (dopo 5s) */
 let nuvolaAttiva = false;
 let nuvola = { x: 0, y: 0, size: 90 };
 
-/* INPUT */
+/* OSTACOLI DISTANZA MINIMA */
+let distanzaMinima = 650;
+
+/* EVITA DOPPIO SALVATAGGIO */
+let punteggioSalvato = false;
+
+/* EVITA DOPPI CARICAMENTI CLASSIFICA */
+let classificaCaricata = false;
+
+
+
+
+
+/* =======================================================
+   🎮 INPUT – SALTO NORMALE + SALTO PROLUNGATO
+======================================================= */
+
+/* Keyboard */
 window.addEventListener("keydown", e => {
-  if (e.code === "Space" || e.code === "ArrowUp") saltoLungo = true;
+  if (e.code === "Space" || e.code === "ArrowUp") {
+    e.preventDefault();
+    saltoLungo = true;
+    if (!renna.jumping) jump();
+  }
 });
+
 window.addEventListener("keyup", e => {
-  if (e.code === "Space" || e.code === "ArrowUp") saltoLungo = false;
+  if (e.code === "Space" || e.code === "ArrowUp") {
+    saltoLungo = false;
+  }
 });
 
-canvas.addEventListener("touchstart", () => saltoLungo = true);
-canvas.addEventListener("touchend",   () => saltoLungo = false);
+/* Mouse click */
+canvas.addEventListener("mousedown", () => {
+  saltoLungo = true;
+  if (!renna.jumping) jump();
+});
+canvas.addEventListener("mouseup", () => saltoLungo = false);
 
-/* SINGOLO SALTO */
+/* Touch */
+canvas.addEventListener("touchstart", () => {
+  saltoLungo = true;
+  if (!renna.jumping) jump();
+});
+canvas.addEventListener("touchend", () => saltoLungo = false);
+
+/* Salto singolo */
 function jump() {
   if (!renna.jumping) {
     renna.vy = -16;
@@ -256,11 +336,11 @@ function jump() {
   }
 }
 
-/* OSTACOLI DISTANZIATI */
-let distanzaMinima = 650;
-
+/* =======================================================
+   🌲 OSTACOLI – GENERAZIONE E DISTANZA MINIMA
+======================================================= */
 function generaOstacolo() {
-  if (nuvolaAttiva) return;
+  if (nuvolaAttiva) return; // non creare alberi mentre la nuvola è attiva
   ostacoli.push({
     x: canvas.width + 20,
     y: canvas.height - 120,
@@ -277,54 +357,72 @@ function gestisciOstacoli() {
   }
 }
 
-/* NEVE */
-function creaNeve() {
-  const snow = document.createElement("div");
-  snow.className = "snowflake";
-  snow.textContent = "❄";
-  snow.style.left = Math.random()*100 + "vw";
-  snow.style.animationDuration = 3 + Math.random()*5 + "s";
-  snow.style.fontSize = 14 + Math.random()*10 + "px";
-  document.body.appendChild(snow);
-  setTimeout(() => snow.remove(), 8000);
-}
-setInterval(creaNeve, 200);
-
-/* GAME LOOP */
-function gameLoop() {
-  if (giocoTerminato) return;
-
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  /* SALTO LUNGO */
+/* =======================================================
+   ☁️ NUVOLA – DOPO 5 SECONDI DI SALTO LUNGO
+======================================================= */
+function gestisciNuvola() {
+  /* Quando la renna tiene premuto e rimane in aria */
   if (saltoLungo && renna.jumping && !nuvolaAttiva) {
-    renna.vy = -6;
-    tempoInAria += 1/60;
+    tempoInAria += 1 / 60;
   }
 
-  /* NUVOLETTA DOPO 5s */
+  /* Se la renna è troppo in aria → appare la nuvola */
   if (tempoInAria > 5 && !nuvolaAttiva) {
     nuvola.x = renna.x - 10;
     nuvola.y = renna.y + 60;
     nuvolaAttiva = true;
   }
 
-  /* NUVOLETTA ATTIVA */
+  /* Comportamento nuvola attiva */
   if (nuvolaAttiva) {
-    renna.vy = 8;
+    renna.vy = 8; // forza verso il basso
 
-    ctx.fillStyle = "rgba(255,255,255,0.9)";
+    // Disegna nuvola
+    ctx.fillStyle = "rgba(255,255,255,0.95)";
     ctx.beginPath();
-    ctx.arc(nuvola.x, nuvola.y, nuvola.size, 0, Math.PI*2);
+    ctx.arc(nuvola.x, nuvola.y, nuvola.size, 0, Math.PI * 2);
     ctx.fill();
 
+    // Se tocca terra → reset nuvola
     if (!renna.jumping) {
       nuvolaAttiva = false;
       tempoInAria = 0;
     }
   }
+}
 
-  /* GRAVITÀ */
+/* =======================================================
+   ❄️ NEVE – EFFETTO GRAFICO
+======================================================= */
+function creaNeve() {
+  const snow = document.createElement("div");
+  snow.className = "snowflake";
+  snow.textContent = "❄";
+  snow.style.left = Math.random() * 100 + "vw";
+  snow.style.animationDuration = 3 + Math.random() * 5 + "s";
+  snow.style.fontSize = 14 + Math.random() * 10 + "px";
+  document.body.appendChild(snow);
+  setTimeout(() => snow.remove(), 8000);
+}
+setInterval(creaNeve, 200);
+
+/* =======================================================
+   🔁 GAME LOOP – FISICA, MOVIMENTO, COLLISIONI
+======================================================= */
+function gameLoop() {
+  if (giocoTerminato) return;
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  /* Salto prolungato */
+  if (saltoLungo && renna.jumping && !nuvolaAttiva) {
+    renna.vy = -6;
+  }
+
+  /* Nuvola */
+  gestisciNuvola();
+
+  /* Gravità */
   renna.y += renna.vy;
   renna.vy += 0.8;
 
@@ -333,9 +431,10 @@ function gameLoop() {
     renna.jumping = false;
   }
 
+  /* Disegna renna */
   ctx.drawImage(rennaImg, renna.x, renna.y, renna.w, renna.h);
 
-  /* OSTACOLI */
+  /* Ostacoli */
   gestisciOstacoli();
 
   ostacoli.forEach((o, i) => {
@@ -355,7 +454,7 @@ function gameLoop() {
     if (o.x + o.w < 0) ostacoli.splice(i, 1);
   });
 
-  /* DISTANZA */
+  /* Distanza */
   distanza += 0.35;
   document.getElementById("info").textContent =
     `Distanza: ${Math.floor(distanza)}m`;
@@ -363,12 +462,20 @@ function gameLoop() {
   requestAnimationFrame(gameLoop);
 }
 
-/* FINE GIOCO */
-let punteggioSalvato = false;
 
+
+
+/* =======================================================
+   🏁 FINE GIOCO – SCHERMATA E BLOCCO SALVATAGGIO
+======================================================= */
 function fineGioco() {
   if (giocoTerminato) return;
   giocoTerminato = true;
+
+  /* Stop musica */
+  const music = document.getElementById("musica");
+  music.pause();
+  music.currentTime = 0;
 
   canvas.style.display = "none";
   document.getElementById("info").style.display = "none";
@@ -382,7 +489,9 @@ function fineGioco() {
   salvaOnline(nomeMascherato, puntiFinali);
 }
 
-/* SALVA ONLINE */
+/* =======================================================
+   💾 SALVATAGGIO – SCRITTURA SU punteggi/giorno2
+======================================================= */
 function salvaOnline(nome, punti) {
   if (punteggioSalvato) return;
   punteggioSalvato = true;
@@ -394,9 +503,9 @@ function salvaOnline(nome, punti) {
   }).then(() => caricaClassifica());
 }
 
-/* CLASSIFICA */
-let classificaCaricata = false;
-
+/* =======================================================
+   🏆 CLASSIFICA GLOBALE – TOP 10
+======================================================= */
 function caricaClassifica() {
   if (classificaCaricata) return;
   classificaCaricata = true;
@@ -410,7 +519,8 @@ function caricaClassifica() {
     .once("value", snap => {
       let lista = [];
       snap.forEach(child => lista.push(child.val()));
-      lista.sort((a,b) => b.punti - a.punti);
+
+      lista.sort((a, b) => b.punti - a.punti);
 
       lista.forEach(row => {
         const tr = document.createElement("tr");
@@ -420,15 +530,23 @@ function caricaClassifica() {
     });
 }
 
-/* AVVIO */
+/* =======================================================
+   ▶️ AVVIO – START SCREEN E MUSICA
+======================================================= */
 document.getElementById("btn-start").addEventListener("click", () => {
   document.getElementById("start-screen").style.display = "none";
   canvas.style.display = "block";
   document.getElementById("info").style.display = "block";
+
+  /* Avvia musica */
+  const music = document.getElementById("musica");
+  music.volume = 0.35;
+  music.play();
+
   gameLoop();
 });
 
-/* MOSTRA CLASSIFICA */
+/* MOSTRA CLASSIFICA SENZA GIOCARE */
 document.getElementById("btn-top10").addEventListener("click", () => {
   document.getElementById("start-screen").style.display = "none";
   document.getElementById("fine").style.display = "flex";
@@ -442,4 +560,6 @@ document.getElementById("retry-btn").addEventListener("click", () => location.re
 
 </body>
 </html>
+
+
 
