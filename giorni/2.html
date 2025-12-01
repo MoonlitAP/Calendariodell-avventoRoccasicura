@@ -1,180 +1,135 @@
  <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>🎄 Giorno 2 – Reindeer Runner</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>🎄 Giorno 2 – Reindeer Runner</title>
 
-  <!-- FONT -->
-  <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;700&display=swap" rel="stylesheet">
 
-  <!-- FIREBASE -->
-  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-database-compat.js"></script>
+<!-- FIREBASE -->
+<script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-database-compat.js"></script>
 
-  <style>
-    body {
-      margin: 0;
-      background-color: #7b0412;
-      font-family: 'Ubuntu', sans-serif;
-      color: #fff;
-      text-align: center;
-      overflow-x: hidden;
-    }
+<style>
+body {
+  margin: 0;
+  background-color: #7b0412;
+  font-family: 'Ubuntu', sans-serif;
+  color: white;
+  text-align: center;
+}
 
-    h1 { color: #ffd700; margin-top: 10px; }
+canvas {
+  display: none;
+  margin: 20px auto;
+  border: 3px solid #ffd700;
+  border-radius: 10px;
+  background: url("../img/sfondo_bosco.jpg") center center / contain no-repeat;
+  touch-action: none;
+}
 
-    /* CANVAS */
-    canvas {
-      display: none;
-      margin: 20px auto 0;
-      background: url("../img/sfondo_bosco.jpg") center/cover no-repeat;
-      border: 3px solid #f5d97c;
-      border-radius: 10px;
-      touch-action: none;
-    }
+h1 { color: #ffd700; margin-top: 10px; }
 
-    .info {
-      display: none;
-      position: fixed;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(0, 0, 0, 0.4);
-      padding: 8px 16px;
-      border-radius: 12px;
-      border: 1px solid #f5d97c;
-      font-size: 1.1em;
-      z-index: 30;
-    }
+.info {
+  display: none;
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0,0,0,0.5);
+  padding: 8px 16px;
+  border: 1px solid #ffd700;
+  border-radius: 12px;
+  z-index: 30;
+}
 
-    /* POPUP FINALE */
-    #fine {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.65);
-      backdrop-filter: blur(4px);
-      z-index: 9999;
-      display: none;
-      justify-content: center;
-      align-items: center;
-    }
+#start-screen, #fine {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.60);
+  backdrop-filter: blur(5px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
 
-    .classifica-box {
-      background: #fffaf2;
-      padding: 25px;
-      border-radius: 20px;
-      width: 90%;
-      max-width: 450px;
-      border: 2px solid #ffd700;
-      color: #400000;
-      animation: popup .4s ease-out;
-    }
+#fine { display: none; }
 
-    @keyframes popup {
-      from { transform: scale(.7); opacity: 0; }
-      to   { transform: scale(1); opacity: 1; }
-    }
+.start-box, .classifica-box {
+  background: #fffaf2;
+  color: #400000;
+  padding: 25px;
+  border-radius: 20px;
+  border: 2px solid #ffd700;
+  width: 90%;
+  max-width: 430px;
+  text-align: center;
+}
 
-    .btn {
-      display: inline-block;
-      margin-top: 15px;
-      padding: 12px 30px;
-      border-radius: 30px;
-      font-weight: bold;
-      text-decoration: none;
-      cursor: pointer;
-      color: #fff;
-      background: #7b0412;
-      transition: .3s;
-    }
-    .btn:hover { background: #ffd700; color: #000; }
+.start-btn, .btn {
+  margin-top: 10px;
+  padding: 14px;
+  width: 80%;
+  border-radius: 30px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  background: #7b0412;
+  color: white;
+}
 
-    /* MENU INIZIALE */
-    #start-screen {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.60);
-      backdrop-filter: blur(4px);
-      z-index: 9998;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
+.start-btn:hover, .btn:hover {
+  background: #ffd700;
+  color: black;
+}
 
-    .start-box {
-      background: #fffaf2;
-      padding: 30px;
-      border-radius: 20px;
-      width: 90%;
-      max-width: 420px;
-      border: 2px solid #ffd700;
-      color: #400000;
-      text-align: center;
-      line-height: 1.5;
-    }
-
-    .start-btn {
-      width: 80%;
-      margin: 10px auto;
-      padding: 14px;
-      border-radius: 30px;
-      font-size: 1.1em;
-      cursor: pointer;
-      background: #7b0412;
-      color: white;
-      border: none;
-    }
-    .start-btn:hover { background: #ffd700; color: #000; }
-
-    table { width: 100%; margin-top: 15px; }
-    th, td { padding: 8px; text-align: center; border-bottom: 1px solid #d7bb5f; }
-
-  </style>
+table { width: 100%; margin-top: 15px; }
+th, td { padding: 8px; border-bottom: 1px solid #d7bb5f; text-align: center; }
+</style>
 </head>
 
 <body>
 
 <h1>🎄 Giorno 2 – Reindeer Runner</h1>
 
-<!-- MENU INIZIALE -->
+<!-- START SCREEN -->
 <div id="start-screen">
   <div class="start-box">
-    <h2>🦌 Inizia il Gioco!</h2>
     <p>
-      Salta, evita gli alberi<br>
-      e sopravvivi alla nuvola finale!
+      🌲 Evita gli alberi<br>
+      🦌 Premi per saltare<br>
+      ✨ Salto lungo fino a 15 secondi<br>
+      ☁ Nuvola dopo 10s reali
     </p>
-
-    <button id="btn-start" class="start-btn">▶️ INIZIA GIOCO</button>
-    <button id="btn-top10" class="start-btn" style="background:#b8860b;">🏆 CLASSIFICA GLOBALE</button>
+    <button id="btn-start" class="start-btn">▶️ INIZIA</button>
+    <button id="btn-top10" class="start-btn" style="background:#b8860b;">🏆 CLASSIFICA</button>
   </div>
 </div>
 
+<!-- GIOCO -->
 <canvas id="game"></canvas>
 <div class="info" id="info">Distanza: 0m</div>
 
-<!-- POPUP FINALE -->
+<!-- FINE GIOCO -->
 <div id="fine">
   <div class="classifica-box">
     <h2 id="messaggio"></h2>
-
-    <h3>🏆 Top 10 Globale</h3>
-    <table id="score-table">
-      <tr><th>Nome</th><th>Punti</th></tr>
-    </table>
-
-    <button id="retry-btn" class="btn" style="background:#d41e1e;">🔄 Riprova</button>
-    <a href="../calendario.html" class="btn">⬅ Torna al Calendario</a>
+    <h3>🏆 Top 10</h3>
+    <table id="score-table"><tr><th>Nome</th><th>Punti</th></tr></table>
+    <button id="retry-btn" class="btn">🔄 Riprova</button>
+    <a href="../calendario.html" class="btn">⬅ Calendario</a>
   </div>
 </div>
 
+<audio id="musica" loop>
+  <source src="../audio/jingle_bells_instrumental.mp3" type="audio/mpeg">
+</audio>
+
 <script>
-/* =======================================================
-   FIREBASE CONFIG
-======================================================= */
+// FIREBASE
 firebase.initializeApp({
   apiKey: "AIzaSyBrI1yThI6zmnYwKE4OHbS8vhrUPrMsnsk",
   authDomain: "calendarioroccasicura.firebaseapp.com",
@@ -183,34 +138,25 @@ firebase.initializeApp({
 });
 const db = firebase.database();
 
-/* =======================================================
-   USER MASK NAME
-======================================================= */
+// USERNAME
 const nomeReale = localStorage.getItem("utente") || "Ospite";
-const nomeMascherato =
-  nomeReale[0] + Math.floor(Math.random()*900+100) + nomeReale.slice(1);
+const nomeMascherato = nomeReale[0] + Math.floor(Math.random()*900+100) + nomeReale.slice(1);
 
-/* =======================================================
-   CANVAS SETUP
-======================================================= */
+// CANVAS
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
 
 function resizeCanvas() {
   if (window.innerWidth < 700) {
     canvas.width = window.innerWidth - 20;
-    canvas.height = window.innerHeight * 0.55;
+    canvas.height = window.innerHeight * 0.50;
   } else {
     canvas.width = 900;
     canvas.height = 500;
   }
 }
-resizeCanvas();
-window.addEventListener("resize", resizeCanvas);
 
-/* =======================================================
-   IMMAGINI
-======================================================= */
+// IMMAGINI
 const rennaImg = new Image();
 rennaImg.src = "../img/renna.png";
 
@@ -220,24 +166,24 @@ alberoImg.src = "../img/albero.png";
 const cloudImg = new Image();
 cloudImg.src = "../img/cloud.png";
 
-/* =======================================================
-   VARIABILI DI GIOCO
-======================================================= */
+// VARIABILI DI GIOCO
 let renna = { x: 120, y: 300, w: 110, h: 110, vy: 0, jumping: false };
 let ostacoli = [];
 let distanza = 0;
+let giocoTerminato = false;
 
+// salto lungo + timer reale
 let saltoLungo = false;
 let tempoVoloReale = 0;
 
+// nuvola
 let nuvola = null;
 let nuvolaAttiva = false;
 
-let giocoTerminato = false;
+// stop alberi
+let stopAlberi = false;
 
-/* =======================================================
-   INPUT
-======================================================= */
+// INPUT
 function jump() {
   if (!renna.jumping) {
     renna.vy = -16;
@@ -246,12 +192,7 @@ function jump() {
   }
 }
 
-canvas.addEventListener("touchstart", e => { e.preventDefault(); saltoLungo = true; jump(); });
-canvas.addEventListener("touchend", () => saltoLungo = false);
-
-canvas.addEventListener("mousedown", () => { saltoLungo = true; jump(); });
-canvas.addEventListener("mouseup", () => saltoLungo = false);
-
+// tastiera
 window.addEventListener("keydown", e => {
   if (["Space", "ArrowUp"].includes(e.code)) {
     saltoLungo = true;
@@ -260,73 +201,66 @@ window.addEventListener("keydown", e => {
 });
 window.addEventListener("keyup", () => saltoLungo = false);
 
-/* =======================================================
-   OSTACOLI
-======================================================= */
+// touch + mouse
+canvas.addEventListener("mousedown", () => { saltoLungo = true; jump(); });
+canvas.addEventListener("mouseup", () => saltoLungo = false);
+canvas.addEventListener("touchstart", e => { e.preventDefault(); saltoLungo = true; jump(); });
+canvas.addEventListener("touchend", () => saltoLungo = false);
+
+// OSTACOLI
 function generaOstacolo() {
-  if (nuvolaAttiva) return;
-  ostacoli.push({ x: canvas.width + 40, y: canvas.height - 120, w: 70, h: 100 });
+  if (stopAlberi || nuvolaAttiva) return;
+  ostacoli.push({ x: canvas.width + 20, y: canvas.height - 120, w: 70, h: 100 });
 }
 
 function gestisciOstacoli() {
   if (ostacoli.length === 0) generaOstacolo();
-
   const ultimo = ostacoli[ostacoli.length - 1];
   if (ultimo.x < canvas.width - 650) generaOstacolo();
 }
 
-/* =======================================================
-   NUVOLA FINALE (OSTACOLO)
-======================================================= */
+// NUVOLA DA DESTRA → SINISTRA
 function generaNuvola() {
   nuvola = {
-    x: canvas.width + 40,
-    y: renna.y,
-    w: 130,  /* più piccola */
-    h: 90,
-    speed: 4 /* più lenta */
+    x: canvas.width + 50,
+    y: canvas.height * 0.15,
+    w: 140,
+    h: 100,
+    speed: 4
   };
 
   nuvolaAttiva = true;
+  stopAlberi = true;
 
-  /* rimuove alberi davanti */
-  ostacoli = ostacoli.filter(o => o.x > renna.x + 350);
+  setTimeout(() => { stopAlberi = false; }, 5000);
 }
 
 function disegnaNuvola() {
-  nuvola.x -= nuvola.speed;
-  ctx.drawImage(cloudImg, nuvola.x, nuvola.y, nuvola.w, nuvola.h);
-}
-
-function controllaCollisioneNuvola() {
   if (!nuvolaAttiva) return;
 
-  if (
-    renna.x < nuvola.x + nuvola.w &&
-    renna.x + renna.w > nuvola.x &&
-    renna.y < nuvola.y + nuvola.h &&
-    renna.y + renna.h > nuvola.y
-  ) {
+  nuvola.x -= nuvola.speed;
+  ctx.drawImage(cloudImg, nuvola.x, nuvola.y, nuvola.w, nuvola.h);
+
+  if (renna.x < nuvola.x + nuvola.w &&
+      renna.x + renna.w > nuvola.x &&
+      renna.y < nuvola.y + nuvola.h &&
+      renna.y + renna.h > nuvola.y) {
     fineGioco();
   }
 
   if (nuvola.x + nuvola.w < 0) {
     nuvolaAttiva = false;
-    nuvola = null;
   }
 }
 
-/* =======================================================
-   FINE GIOCO
-======================================================= */
+// FINE GIOCO
 function fineGioco() {
   giocoTerminato = true;
   document.getElementById("fine").style.display = "flex";
-
   document.getElementById("messaggio").textContent =
     `Hai percorso ${Math.floor(distanza)} metri!`;
 
-  db.ref("punteggi/giorno2").push({
+  db.ref("giorno2").push({
     nome: nomeMascherato,
     punti: Math.floor(distanza)
   });
@@ -334,37 +268,30 @@ function fineGioco() {
   caricaClassifica();
 }
 
-/* =======================================================
-   CLASSIFICA
-======================================================= */
+// CLASSIFICA
 function caricaClassifica() {
-  const table = document.getElementById("score-table");
-  table.innerHTML = "<tr><th>Nome</th><th>Punti</th></tr>";
-
-  db.ref("punteggi/giorno2")
+  db.ref("giorno2")
     .orderByChild("punti")
     .limitToLast(10)
     .once("value", snap => {
+      const table = document.getElementById("score-table");
+      table.innerHTML = "<tr><th>Nome</th><th>Punti</th></tr>";
 
-      let list = [];
-      snap.forEach(s => list.push(s.val()));
-      list.sort((a,b) => b.punti - a.punti);
-
-      list.forEach(r => {
+      let arr = [];
+      snap.forEach(s => arr.push(s.val()));
+      arr.reverse().forEach(r => {
         table.innerHTML += `<tr><td>${r.nome}</td><td>${r.punti}</td></tr>`;
       });
     });
 }
 
-/* =======================================================
-   GAME LOOP
-======================================================= */
+// GAME LOOP
 function gameLoop() {
   if (giocoTerminato) return;
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  /* tempo reale di volo */
+  // tempo reale di volo
   if (renna.jumping && !nuvolaAttiva) {
     tempoVoloReale += 1/60;
 
@@ -373,39 +300,39 @@ function gameLoop() {
     }
   }
 
-  /* attiva nuvola dopo 10 secondi */
+  // nuvola dopo 10s
   if (!nuvolaAttiva && tempoVoloReale >= 10) {
     generaNuvola();
   }
 
-  /* gravità */
+  // gravità
   renna.y += renna.vy;
   renna.vy += 0.8;
 
-  /* limite alto */
-  if (renna.y < canvas.height * 0.05) {
-    renna.y = canvas.height * 0.05;
+  // tetto → solo limite fisico
+  const limiteAlto = canvas.height * 0.05;
+  if (renna.y < limiteAlto) {
+    renna.y = limiteAlto;
     renna.vy = 1;
   }
 
-  /* terreno */
+  // terreno
   const terreno = canvas.height - 150;
   if (renna.y > terreno) {
     renna.y = terreno;
     renna.vy = 0;
     renna.jumping = false;
     tempoVoloReale = 0;
+    nuvolaAttiva = false;
   }
 
+  // disegna renna
   ctx.drawImage(rennaImg, renna.x, renna.y, renna.w, renna.h);
 
-  /* nuvola */
-  if (nuvolaAttiva) {
-    disegnaNuvola();
-    controllaCollisioneNuvola();
-  }
+  // nuvola
+  disegnaNuvola();
 
-  /* ostacoli */
+  // ostacoli
   gestisciOstacoli();
   ostacoli.forEach((o, i) => {
     o.x -= 6;
@@ -430,25 +357,25 @@ function gameLoop() {
   requestAnimationFrame(gameLoop);
 }
 
-/* =======================================================
-   BOTTONI
-======================================================= */
-document.getElementById("btn-start").addEventListener("click", () => {
+// BOTTONI
+document.getElementById("btn-start").onclick = () => {
   document.getElementById("start-screen").style.display = "none";
 
   canvas.style.display = "block";
+  resizeCanvas();
   document.getElementById("info").style.display = "block";
 
+  document.getElementById("musica").play();
   gameLoop();
-});
+};
 
-document.getElementById("btn-top10").addEventListener("click", () => {
+document.getElementById("btn-top10").onclick = () => {
   document.getElementById("start-screen").style.display = "none";
   document.getElementById("fine").style.display = "flex";
   caricaClassifica();
-});
+};
 
-document.getElementById("retry-btn").addEventListener("click", () => location.reload());
+document.getElementById("retry-btn").onclick = () => location.reload();
 </script>
 
 </body>
