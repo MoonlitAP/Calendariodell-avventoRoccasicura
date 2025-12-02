@@ -59,7 +59,7 @@ canvas {
 }
 
 /* =====================================================================
-   ▶️ SCHERMATA INIZIALE — uguale stile giorno 1
+   ▶️ SCHERMATA INIZIALE — stile uguale a Giorno 1
    ===================================================================== */
 #start-screen {
   position: fixed;
@@ -111,7 +111,7 @@ canvas {
   width: 100%; height: 100%;
   background: rgba(0,0,0,0.65);
   backdrop-filter: blur(5px);
-  display: none; /* viene mostrata solo se serve */
+  display: none;
   justify-content: center;
   align-items: center;
   z-index: 9999;
@@ -137,7 +137,7 @@ canvas {
 }
 
 /* =====================================================================
-   ⏱ COUNTDOWN 3 – 2 – 1 – VIA grande
+   ⏱ COUNTDOWN 3 – 2 – 1 – VIA
    ===================================================================== */
 #countdown {
   position: fixed;
@@ -166,7 +166,7 @@ canvas {
 }
 
 /* =====================================================================
-   🏁 FINE GIOCO — stile identico al Giorno 1
+   🏁 FINE GIOCO — finestra identica a Giorno 1
    ===================================================================== */
 #fine {
   position: fixed;
@@ -220,7 +220,6 @@ th, td {
   border-bottom: 1px solid #d7bb5f;
   text-align: center;
 }
-
 </style>
 </head>
 
@@ -228,9 +227,7 @@ th, td {
 
 <h1>🎄 Giorno 2 – Reindeer Runner</h1>
 
-<!-- =====================================================================
-     ▶️ SCHERMATA INIZIALE
-     ===================================================================== -->
+<!-- ▶️ SCHERMATA INIZIALE -->
 <div id="start-screen">
   <div class="start-box">
     <p>
@@ -244,9 +241,7 @@ th, td {
   </div>
 </div>
 
-<!-- =====================================================================
-     📱 SCHERMATA "RUOTA IL DISPOSITIVO"
-     ===================================================================== -->
+<!-- 📱 RUOTA DISPOSITIVO -->
 <div id="rotate-screen">
   <div class="rotate-box">
     📱 <br>
@@ -255,27 +250,21 @@ th, td {
   </div>
 </div>
 
-<!-- =====================================================================
-     ⏱ COUNTDOWN 3 - 2 - 1 - VIA!
-     ===================================================================== -->
+<!-- COUNTDOWN 3-2-1 -->
 <div id="countdown">
   <div id="countdown-number" class="countdown-number">3</div>
 </div>
 
-<!-- =====================================================================
-     🕹 CANVAS + INFO
-     ===================================================================== -->
+<!-- CANVAS -->
 <canvas id="game"></canvas>
 <div class="info" id="info">Distanza: 0m</div>
 
-<!-- =====================================================================
-     🏁 FINE GIOCO
-     ===================================================================== -->
+<!-- FINE GIOCO -->
 <div id="fine">
   <div class="classifica-box">
     <h2 id="messaggio"></h2>
-
     <h3>🏆 Top 10 Globale</h3>
+
     <table id="score-table">
       <tr><th>Nome</th><th>Punti</th></tr>
     </table>
@@ -285,14 +274,12 @@ th, td {
   </div>
 </div>
 
-<!-- =====================================================================
-     🎵 AUDIO
-     ===================================================================== -->
+<!-- AUDIO -->
 <audio id="musica" loop>
   <source src="../audio/jingle_bells_instrumental.mp3" type="audio/mpeg">
 </audio>
 
-<!-- *** FINE PARTE 1 *** -->
+
 
 
 
@@ -344,6 +331,9 @@ function resizeCanvas() {
   }
 }
 
+resizeCanvas();
+window.addEventListener("resize", resizeCanvas);
+
 const rennaImg = new Image(); rennaImg.src = "../img/renna.png";
 const alberoImg = new Image(); alberoImg.src = "../img/albero.png";
 const cloudImg  = new Image(); cloudImg.src  = "../img/cloud.png";
@@ -373,13 +363,13 @@ let nuvolaAttiva = false;
 let giocoTerminato = false;
 
 /* ================================================================
-   🎮 INPUT
+   🎮 INPUT — salto lungo 15s
    ================================================================ */
 function jump() {
   if (!renna.jumping) {
     renna.vy = -16;
     renna.jumping = true;
-    tempoVoloReale = 0;
+    tempoVoloReale = 0;  // reset timer volo reale
   }
 }
 
@@ -391,17 +381,25 @@ window.addEventListener("keydown", e => {
 });
 window.addEventListener("keyup", () => saltoLungo = false);
 
-canvas.addEventListener("mousedown", () => { saltoLungo = true; jump(); });
+canvas.addEventListener("mousedown", () => {
+  saltoLungo = true;
+  jump();
+});
 canvas.addEventListener("mouseup", () => saltoLungo = false);
 
-canvas.addEventListener("touchstart", e => { e.preventDefault(); saltoLungo = true; jump(); });
+canvas.addEventListener("touchstart", e => {
+  e.preventDefault();
+  saltoLungo = true;
+  jump();
+});
 canvas.addEventListener("touchend", () => saltoLungo = false);
 
 /* ================================================================
-   🌲 ALBERI
+   🌲 OSTACOLI — ALBERI
    ================================================================ */
 function generaOstacolo() {
   if (stopAlberi || nuvolaAttiva) return;
+
   ostacoli.push({
     x: canvas.width + 20,
     y: canvas.height - 120,
@@ -412,12 +410,13 @@ function generaOstacolo() {
 
 function gestisciOstacoli() {
   if (ostacoli.length === 0) generaOstacolo();
+
   const ultimo = ostacoli[ostacoli.length - 1];
   if (ultimo.x < canvas.width - 650) generaOstacolo();
 }
 
 /* ================================================================
-   ☁️ NUVOLA — da destra → sinistra
+   ☁️ NUVOLA — da destra verso sinistra (lenta)
    ================================================================ */
 function generaNuvola() {
   nuvola = {
@@ -425,14 +424,13 @@ function generaNuvola() {
     y: canvas.height * 0.18,
     w: 120,
     h: 85,
-    speed: 1.8
-};
-
+    speed: 1.8 // <<< velocità più lenta
+  };
 
   nuvolaAttiva = true;
   stopAlberi = true;
 
-  // dopo 5 secondi gli alberi riprendono
+  // dopo 5 secondi gli alberi ricominciano
   setTimeout(() => stopAlberi = false, 5000);
 }
 
@@ -442,7 +440,7 @@ function disegnaNuvola() {
   nuvola.x -= nuvola.speed;
   ctx.drawImage(cloudImg, nuvola.x, nuvola.y, nuvola.w, nuvola.h);
 
-  // collisione nuvola
+  // collisione nuvola = fine gioco
   if (
     renna.x < nuvola.x + nuvola.w &&
     renna.x + renna.w > nuvola.x &&
@@ -452,22 +450,35 @@ function disegnaNuvola() {
     fineGioco();
   }
 
+  // sparita fuori schermo
   if (nuvola.x + nuvola.w < 0) nuvolaAttiva = false;
 }
+
+
+
+
+
+
+
+
+
 
 /* ================================================================
    🏁 FINE GIOCO
    ================================================================ */
 function fineGioco() {
+  if (giocoTerminato) return;
   giocoTerminato = true;
 
   document.getElementById("fine").style.display = "flex";
   document.getElementById("messaggio").textContent =
     `Hai percorso ${Math.floor(distanza)} metri!`;
 
+  // Salva su Firebase
   db.ref("giorno2").push({
     nome: nomeMascherato,
-    punti: Math.floor(distanza)
+    punti: Math.floor(distanza),
+    timestamp: Date.now()
   });
 
   caricaClassifica();
@@ -477,24 +488,48 @@ function fineGioco() {
    🏆 CLASSIFICA
    ================================================================ */
 function caricaClassifica() {
+  const table = document.getElementById("score-table");
+  table.innerHTML = "<tr><th>Nome</th><th>Punti</th></tr>";
+
   db.ref("giorno2")
     .orderByChild("punti")
     .limitToLast(10)
     .once("value", snap => {
-
-      const table = document.getElementById("score-table");
-      table.innerHTML = "<tr><th>Nome</th><th>Punti</th></tr>";
-
       let arr = [];
       snap.forEach(s => arr.push(s.val()));
-      arr.reverse().forEach(r => {
+      arr.sort((a, b) => b.punti - a.punti);
+
+      arr.forEach(r => {
         table.innerHTML += `<tr><td>${r.nome}</td><td>${r.punti}</td></tr>`;
       });
     });
 }
 
 /* ================================================================
-   🔁 GAME LOOP
+   🧊 FREEZE DETECTOR
+   ================================================================ */
+let lastDistance = 0;
+let freezeTimer = 0;
+
+function controllaFreeze() {
+  if (giocoTerminato) return;
+
+  if (Math.floor(distanza) === Math.floor(lastDistance)) {
+    freezeTimer++;
+
+    // 90 frame ≈ 1.5 secondi
+    if (freezeTimer > 90) {
+      fineGioco();
+    }
+  } else {
+    freezeTimer = 0;
+  }
+
+  lastDistance = distanza;
+}
+
+/* ================================================================
+   🔁 GAME LOOP FINALE
    ================================================================ */
 function gameLoop() {
 
@@ -511,30 +546,32 @@ function gameLoop() {
     }
   }
 
-  /* ☁️ NUVOLA DOPO 10 SECONDI REALI */
+  /* ☁️ NUVOLA DOPO 10 SECONDI REALI IN ARIA */
   if (!nuvolaAttiva && tempoVoloReale >= 10) {
     generaNuvola();
   }
 
-  /* ⚙️ FISICA */
+  /* ⚙️ FISICA GRAVITÀ */
   renna.y += renna.vy;
   renna.vy += 0.8;
 
-  /* 🔼 LIMITE TETTO — solo limite fisico */
+  /* 🔼 LIMITE ALTO (tetto fisico) */
   const limiteAlto = canvas.height * 0.05;
+
   if (renna.y < limiteAlto) {
     renna.y = limiteAlto;
-    renna.vy = 1;
-    renna.jumping = true; // mantiene attivo il timer
+    renna.vy = 1;   // rimbalzo verso il basso
+    renna.jumping = true;
   }
 
   /* 🔽 TERRA */
   const terreno = canvas.height - 150;
+
   if (renna.y > terreno) {
     renna.y = terreno;
     renna.vy = 0;
     renna.jumping = false;
-    tempoVoloReale = 0;
+    tempoVoloReale = 0;  // reset solo quando tocchi terra
     nuvolaAttiva = false;
   }
 
@@ -547,10 +584,10 @@ function gameLoop() {
   /* 🌲 OSTACOLI */
   gestisciOstacoli();
   ostacoli.forEach((o, i) => {
-
     o.x -= 6;
     ctx.drawImage(alberoImg, o.x, o.y - 30, o.w, o.h);
 
+    // collisione
     if (
       renna.x < o.x + o.w &&
       renna.x + renna.w > o.x &&
@@ -563,16 +600,19 @@ function gameLoop() {
     if (o.x + o.w < 0) ostacoli.splice(i, 1);
   });
 
-  /* DISTANZA */
+  /* 📏 DISTANZA */
   distanza += 0.30;
   document.getElementById("info").textContent =
     `Distanza: ${Math.floor(distanza)}m`;
+
+  /* 🧊 Controllo freeze */
+  controllaFreeze();
 
   requestAnimationFrame(gameLoop);
 }
 
 /* ================================================================
-   📱 CONTROLLO ORIENTAMENTO + COUNTDOWN
+   📱 CONTROLLO ORIENTAMENTO
    ================================================================ */
 function isVertical() {
   return window.innerHeight > window.innerWidth;
@@ -586,6 +626,9 @@ function nascondiRotate() {
   document.getElementById("rotate-screen").style.display = "none";
 }
 
+/* ================================================================
+   ⏱ COUNTDOWN 3–2–1–VIA
+   ================================================================ */
 function avviaCountdown(callback) {
   const ctn = document.getElementById("countdown");
   const num = document.getElementById("countdown-number");
@@ -617,37 +660,7 @@ function avviaCountdown(callback) {
 }
 
 /* ================================================================
-   ▶️ START DEL GIOCO CON ORIENTAMENTO
-   ================================================================ */
-document.getElementById("btn-start").onclick = () => {
-
-  document.getElementById("start-screen").style.display = "none";
-
-  if (isVertical()) {
-    mostraRotate();
-  } else {
-    avviaCountdown(iniziaGioco);
-  }
-};
-
-/* Se cambia orientamento → controlliamo */
-window.addEventListener("orientationchange", () => {
-  if (!isVertical()) {
-    nascondiRotate();
-    avviaCountdown(iniziaGioco);
-  }
-});
-
-/* fallback Android */
-window.addEventListener("resize", () => {
-  if (!isVertical() && document.getElementById("rotate-screen").style.display !== "none") {
-    nascondiRotate();
-    avviaCountdown(iniziaGioco);
-  }
-});
-
-/* ================================================================
-   🚀 AVVIO VERO DEL GIOCO
+   🚀 AVVIO DEL GIOCO
    ================================================================ */
 function iniziaGioco() {
 
@@ -657,6 +670,7 @@ function iniziaGioco() {
 
   const musica = document.getElementById("musica");
   musica.currentTime = 0;
+
   musica.play().catch(() => {
     canvas.addEventListener("touchstart", () => musica.play(), { once:true });
     canvas.addEventListener("mousedown", () => musica.play(), { once:true });
@@ -666,21 +680,44 @@ function iniziaGioco() {
 }
 
 /* ================================================================
-   🏆 TOP 10 (dalla schermata iniziale)
+   ▶️ START SCHERMATA INIZIALE
    ================================================================ */
+document.getElementById("btn-start").onclick = () => {
+  document.getElementById("start-screen").style.display = "none";
+
+  if (isVertical()) {
+    mostraRotate();
+  } else {
+    avviaCountdown(iniziaGioco);
+  }
+};
+
+/* Cambia orientamento */
+window.addEventListener("orientationchange", () => {
+  if (!isVertical()) {
+    nascondiRotate();
+    avviaCountdown(iniziaGioco);
+  }
+});
+
+/* Fallback Android */
+window.addEventListener("resize", () => {
+  if (!isVertical() &&
+      document.getElementById("rotate-screen").style.display !== "none") {
+    nascondiRotate();
+    avviaCountdown(iniziaGioco);
+  }
+});
+
+/* ================================================================
+   🔄 RIPROVA + TOP10
+   ================================================================ */
+document.getElementById("retry-btn").onclick = () => location.reload();
+
 document.getElementById("btn-top10").onclick = () => {
   document.getElementById("start-screen").style.display = "none";
   document.getElementById("fine").style.display = "flex";
   caricaClassifica();
 };
 
-/* ================================================================
-   🔄 RICOMINCIA
-   ================================================================ */
-document.getElementById("retry-btn").onclick = () => location.reload();
-
 </script>
-
-</body>
-</html>
-
