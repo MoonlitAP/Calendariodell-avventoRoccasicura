@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="viewport" content="width=device-width, maximum-scale=1.0">
 <title>🎄 Giorno 2 – Reindeer Runner</title>
 
 <!-- FONT -->
@@ -13,9 +13,9 @@
 <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-database-compat.js"></script>
 
 <style>
-/* ================================================================
-   🎨 STILI GENERALI DELLA PAGINA
-   ================================================================= */
+/* =====================================================================
+   🎨 STILE GENERALE DELLA PAGINA
+   ===================================================================== */
 body {
   margin: 0;
   background-color: #7b0412;
@@ -30,10 +30,9 @@ h1 {
   margin-top: 10px;
 }
 
-/* ================================================================
-   🖼️ CANVAS DI GIOCO
-   Lo sfondo è centrato e si adatta anche in verticale.
-   ================================================================= */
+/* =====================================================================
+   🖼️ CANVAS DI GIOCO — responsive
+   ===================================================================== */
 canvas {
   display: none;
   margin: 20px auto;
@@ -43,25 +42,25 @@ canvas {
   touch-action: none;
 }
 
-/* ================================================================
-   📍 INFO DISTANZA
-   ================================================================= */
+/* =====================================================================
+   📏 INFO distanza in basso
+   ===================================================================== */
 .info {
   display: none;
   position: fixed;
   bottom: 20px;
   left: 50%;
   transform: translateX(-50%);
-  background: rgba(0,0,0,0.50);
+  background: rgba(0, 0, 0, 0.50);
   padding: 8px 16px;
   border-radius: 12px;
   border: 1px solid #ffd700;
-  z-index: 30;
+  z-index: 40;
 }
 
-/* ================================================================
-   ▶️ SCHERMATA INIZIALE
-   ================================================================= */
+/* =====================================================================
+   ▶️ SCHERMATA INIZIALE — uguale stile giorno 1
+   ===================================================================== */
 #start-screen {
   position: fixed;
   top: 0; left: 0;
@@ -71,7 +70,7 @@ canvas {
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 9999;
+  z-index: 9998;
 }
 
 .start-box {
@@ -85,10 +84,11 @@ canvas {
   text-align: center;
 }
 
+/* Pulsanti identici al Giorno 1 */
 .start-btn {
   width: 80%;
-  margin-top: 10px;
-  padding: 13px;
+  margin-top: 12px;
+  padding: 14px;
   border-radius: 30px;
   font-size: 1.1em;
   cursor: pointer;
@@ -102,15 +102,78 @@ canvas {
   color: black;
 }
 
-/* ================================================================
-   🏁 FINE GIOCO / CLASSIFICA
-   ================================================================= */
+/* =====================================================================
+   📱 SCHERMATA "RUOTA IL DISPOSITIVO"
+   ===================================================================== */
+#rotate-screen {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.65);
+  backdrop-filter: blur(5px);
+  display: none; /* viene mostrata solo se serve */
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.rotate-box {
+  background: #fffaf2;
+  border: 2px solid #ffd700;
+  border-radius: 20px;
+  padding: 30px;
+  width: 90%;
+  max-width: 360px;
+  text-align: center;
+  color: #400000;
+  font-size: 1.2em;
+  line-height: 1.5;
+  animation: fadeIn .6s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.92); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/* =====================================================================
+   ⏱ COUNTDOWN 3 – 2 – 1 – VIA grande
+   ===================================================================== */
+#countdown {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.50);
+  backdrop-filter: blur(4px);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.countdown-number {
+  font-size: 6rem;
+  font-weight: bold;
+  color: #ffd700;
+  text-shadow: 0 0 20px black;
+  animation: zoomFade 1s ease forwards;
+}
+
+@keyframes zoomFade {
+  0%   { opacity: 0; transform: scale(0.4); }
+  30%  { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(2); }
+}
+
+/* =====================================================================
+   🏁 FINE GIOCO — stile identico al Giorno 1
+   ===================================================================== */
 #fine {
   position: fixed;
   top: 0; left: 0;
   width: 100%; height: 100%;
-  background: rgba(0,0,0,0.60);
-  backdrop-filter: blur(5px);
+  background: rgba(0,0,0,0.65);
+  backdrop-filter: blur(4px);
   display: none;
   justify-content: center;
   align-items: center;
@@ -122,10 +185,11 @@ canvas {
   padding: 25px;
   border-radius: 20px;
   width: 90%;
-  max-width: 430px;
+  max-width: 460px;
   border: 2px solid #ffd700;
   color: #400000;
   animation: popup .4s ease-out;
+  text-align: center;
 }
 
 @keyframes popup {
@@ -134,17 +198,16 @@ canvas {
 }
 
 .btn {
-  margin-top: 15px;
-  padding: 14px;
-  width: 80%;
-  border-radius: 30px;
-  border: none;
-  cursor: pointer;
-  font-weight: bold;
-  background: #7b0412;
-  color: white;
   display: inline-block;
+  margin-top: 15px;
+  padding: 12px 30px;
+  border-radius: 30px;
+  font-weight: bold;
   text-decoration: none;
+  cursor: pointer;
+  color: #fff;
+  background: #7b0412;
+  transition: .3s;
 }
 .btn:hover {
   background: #ffd700;
@@ -152,7 +215,11 @@ canvas {
 }
 
 table { width: 100%; margin-top: 15px; }
-th, td { padding: 8px; border-bottom: 1px solid #d7bb5f; text-align: center; }
+th, td {
+  padding: 8px;
+  border-bottom: 1px solid #d7bb5f;
+  text-align: center;
+}
 
 </style>
 </head>
@@ -161,50 +228,91 @@ th, td { padding: 8px; border-bottom: 1px solid #d7bb5f; text-align: center; }
 
 <h1>🎄 Giorno 2 – Reindeer Runner</h1>
 
-<!-- ================================================================
-     ▶️ START SCREEN
-     ================================================================= -->
+<!-- =====================================================================
+     ▶️ SCHERMATA INIZIALE
+     ===================================================================== -->
 <div id="start-screen">
   <div class="start-box">
     <p>
       🌲 Evita gli alberi<br>
       🦌 Premi per saltare<br>
-      ✨ Salto lungo fino a 15 secondi reali<br>
-      ☁ Nuvola dopo 10s di volo continuo
+      ✨ Salto lungo fino a 15 secondi<br>
+      ☁ Nuvola dopo 10s di volo reale
     </p>
     <button id="btn-start" class="start-btn">▶️ INIZIA</button>
     <button id="btn-top10" class="start-btn" style="background:#b8860b;">🏆 CLASSIFICA</button>
   </div>
 </div>
 
-<!-- CANVAS -->
-<canvas id="game"></canvas>
-<div class="info" id="info">Distanza: 0m</div>
-
-<!-- ================================================================
-     🏁 SCHERMATA FINALE
-     ================================================================= -->
-<div id="fine">
-  <div class="classifica-box">
-    <h2 id="messaggio"></h2>
-    <h3>🏆 Top 10</h3>
-    <table id="score-table">
-      <tr><th>Nome</th><th>Punti</th></tr>
-    </table>
-    <button id="retry-btn" class="btn">🔄 Riprova</button>
-    <a href="../calendario.html" class="btn">⬅ Calendario</a>
+<!-- =====================================================================
+     📱 SCHERMATA "RUOTA IL DISPOSITIVO"
+     ===================================================================== -->
+<div id="rotate-screen">
+  <div class="rotate-box">
+    📱 <br>
+    <strong>Ruota il dispositivo!</strong><br>
+    Il gioco funziona solo in orizzontale.
   </div>
 </div>
 
-<!-- AUDIO -->
+<!-- =====================================================================
+     ⏱ COUNTDOWN 3 - 2 - 1 - VIA!
+     ===================================================================== -->
+<div id="countdown">
+  <div id="countdown-number" class="countdown-number">3</div>
+</div>
+
+<!-- =====================================================================
+     🕹 CANVAS + INFO
+     ===================================================================== -->
+<canvas id="game"></canvas>
+<div class="info" id="info">Distanza: 0m</div>
+
+<!-- =====================================================================
+     🏁 FINE GIOCO
+     ===================================================================== -->
+<div id="fine">
+  <div class="classifica-box">
+    <h2 id="messaggio"></h2>
+
+    <h3>🏆 Top 10 Globale</h3>
+    <table id="score-table">
+      <tr><th>Nome</th><th>Punti</th></tr>
+    </table>
+
+    <button id="retry-btn" class="btn" style="background:#d41e1e;">🔄 Riprova</button>
+    <a href="../calendario.html" class="btn">⬅ Torna al Calendario</a>
+  </div>
+</div>
+
+<!-- =====================================================================
+     🎵 AUDIO
+     ===================================================================== -->
 <audio id="musica" loop>
   <source src="../audio/jingle_bells_instrumental.mp3" type="audio/mpeg">
 </audio>
 
+<!-- *** FINE PARTE 1 *** -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 <script>
 /* ================================================================
    🔥 FIREBASE CONFIG
-   ================================================================= */
+   ================================================================ */
 firebase.initializeApp({
   apiKey: "AIzaSyBrI1yThI6zmnYwKE4OHbS8vhrUPrMsnsk",
   authDomain: "calendarioroccasicura.firebaseapp.com",
@@ -215,14 +323,14 @@ const db = firebase.database();
 
 /* ================================================================
    👤 NOME MASCHERATO
-   ================================================================= */
+   ================================================================ */
 const nomeReale = localStorage.getItem("utente") || "Ospite";
 const nomeMascherato =
   nomeReale[0] + Math.floor(Math.random()*900+100) + nomeReale.slice(1);
 
 /* ================================================================
-   🖼️ CANVAS RESPONSIVE
-   ================================================================= */
+   🎮 CANVAS E SPRITES
+   ================================================================ */
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
 
@@ -236,16 +344,13 @@ function resizeCanvas() {
   }
 }
 
-/* ================================================================
-   🖼️ SPRITES
-   ================================================================= */
 const rennaImg = new Image(); rennaImg.src = "../img/renna.png";
 const alberoImg = new Image(); alberoImg.src = "../img/albero.png";
 const cloudImg  = new Image(); cloudImg.src  = "../img/cloud.png";
 
 /* ================================================================
-   🎮 VARIABILI DI GIOCO
-   ================================================================= */
+   🦌 GIOCATORE (RENNA)
+   ================================================================ */
 let renna = {
   x: 120,
   y: 300,
@@ -255,21 +360,21 @@ let renna = {
   jumping: false
 };
 
-let ostacoli = [];
 let distanza = 0;
-let giocoTerminato = false;
-
 let saltoLungo = false;
 let tempoVoloReale = 0;
+
+let ostacoli = [];
+let stopAlberi = false;
 
 let nuvola = null;
 let nuvolaAttiva = false;
 
-let stopAlberi = false;
+let giocoTerminato = false;
 
 /* ================================================================
    🎮 INPUT
-   ================================================================= */
+   ================================================================ */
 function jump() {
   if (!renna.jumping) {
     renna.vy = -16;
@@ -284,22 +389,17 @@ window.addEventListener("keydown", e => {
     jump();
   }
 });
-
 window.addEventListener("keyup", () => saltoLungo = false);
 
 canvas.addEventListener("mousedown", () => { saltoLungo = true; jump(); });
 canvas.addEventListener("mouseup", () => saltoLungo = false);
 
-canvas.addEventListener("touchstart", e => {
-  e.preventDefault();
-  saltoLungo = true;
-  jump();
-});
+canvas.addEventListener("touchstart", e => { e.preventDefault(); saltoLungo = true; jump(); });
 canvas.addEventListener("touchend", () => saltoLungo = false);
 
 /* ================================================================
-   🌲 OSTACOLI
-   ================================================================= */
+   🌲 ALBERI
+   ================================================================ */
 function generaOstacolo() {
   if (stopAlberi || nuvolaAttiva) return;
   ostacoli.push({
@@ -317,12 +417,12 @@ function gestisciOstacoli() {
 }
 
 /* ================================================================
-   ☁️ NUVOLA DA DESTRA → SINISTRA
-   ================================================================= */
+   ☁️ NUVOLA — da destra → sinistra
+   ================================================================ */
 function generaNuvola() {
   nuvola = {
-    x: canvas.width + 50,
-    y: canvas.height * 0.15,
+    x: canvas.width + 60,
+    y: canvas.height * 0.18,
     w: 120,
     h: 85,
     speed: 4
@@ -331,7 +431,7 @@ function generaNuvola() {
   nuvolaAttiva = true;
   stopAlberi = true;
 
-  // dopo 5 secondi riprendono gli alberi
+  // dopo 5 secondi gli alberi riprendono
   setTimeout(() => stopAlberi = false, 5000);
 }
 
@@ -341,7 +441,7 @@ function disegnaNuvola() {
   nuvola.x -= nuvola.speed;
   ctx.drawImage(cloudImg, nuvola.x, nuvola.y, nuvola.w, nuvola.h);
 
-  // collisione nuvola → game over
+  // collisione nuvola
   if (
     renna.x < nuvola.x + nuvola.w &&
     renna.x + renna.w > nuvola.x &&
@@ -355,8 +455,8 @@ function disegnaNuvola() {
 }
 
 /* ================================================================
-   💥 FINE GIOCO
-   ================================================================= */
+   🏁 FINE GIOCO
+   ================================================================ */
 function fineGioco() {
   giocoTerminato = true;
 
@@ -374,7 +474,7 @@ function fineGioco() {
 
 /* ================================================================
    🏆 CLASSIFICA
-   ================================================================= */
+   ================================================================ */
 function caricaClassifica() {
   db.ref("giorno2")
     .orderByChild("punti")
@@ -394,16 +494,14 @@ function caricaClassifica() {
 
 /* ================================================================
    🔁 GAME LOOP
-   ================================================================= */
+   ================================================================ */
 function gameLoop() {
 
   if (giocoTerminato) return;
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  /* ------------------------------------------
-     ⏱ SALTO LUNGO: tempo reale di volo
-     ------------------------------------------ */
+  /* ⏱ TEMPO DI VOLO REALE */
   if (renna.jumping && !nuvolaAttiva) {
     tempoVoloReale += 1/60;
 
@@ -412,54 +510,40 @@ function gameLoop() {
     }
   }
 
-  // NUVOLE DOPO 10s REALI
+  /* ☁️ NUVOLA DOPO 10 SECONDI REALI */
   if (!nuvolaAttiva && tempoVoloReale >= 10) {
     generaNuvola();
   }
 
-  /* ------------------------------------------
-     🧲 GRAVITÀ
-     ------------------------------------------ */
+  /* ⚙️ FISICA */
   renna.y += renna.vy;
   renna.vy += 0.8;
 
-  /* ------------------------------------------
-     🔼 LIMITE TETTO — SOLO LIMITE FISICO
-     ------------------------------------------ */
+  /* 🔼 LIMITE TETTO — solo limite fisico */
   const limiteAlto = canvas.height * 0.05;
-
   if (renna.y < limiteAlto) {
     renna.y = limiteAlto;
-    renna.vy = 1;     // non blocca il salto
-    renna.jumping = true; // mantiene il timer attivo
+    renna.vy = 1;
+    renna.jumping = true; // mantiene attivo il timer
   }
 
-  /* ------------------------------------------
-     🔽 TERRA
-     ------------------------------------------ */
+  /* 🔽 TERRA */
   const terreno = canvas.height - 150;
-
   if (renna.y > terreno) {
     renna.y = terreno;
     renna.vy = 0;
     renna.jumping = false;
-    tempoVoloReale = 0;  // reset solo a terra
+    tempoVoloReale = 0;
     nuvolaAttiva = false;
   }
 
-  /* ------------------------------------------
-     🦌 DISEGNA RENNA
-     ------------------------------------------ */
+  /* 🦌 DISEGNA RENNA */
   ctx.drawImage(rennaImg, renna.x, renna.y, renna.w, renna.h);
 
-  /* ------------------------------------------
-     ☁️ DISEGNA NUVOLA
-     ------------------------------------------ */
+  /* ☁️ DISEGNA NUVOLA */
   disegnaNuvola();
 
-  /* ------------------------------------------
-     🌲 OSTACOLI
-     ------------------------------------------ */
+  /* 🌲 OSTACOLI */
   gestisciOstacoli();
   ostacoli.forEach((o, i) => {
 
@@ -478,10 +562,8 @@ function gameLoop() {
     if (o.x + o.w < 0) ostacoli.splice(i, 1);
   });
 
-  /* ------------------------------------------
-     📏 DISTANZA
-     ------------------------------------------ */
-  distanza += 0.3;
+  /* DISTANZA */
+  distanza += 0.30;
   document.getElementById("info").textContent =
     `Distanza: ${Math.floor(distanza)}m`;
 
@@ -489,34 +571,111 @@ function gameLoop() {
 }
 
 /* ================================================================
-   ▶️ PULSANTI
-   ================================================================= */
+   📱 CONTROLLO ORIENTAMENTO + COUNTDOWN
+   ================================================================ */
+function isVertical() {
+  return window.innerHeight > window.innerWidth;
+}
+
+function mostraRotate() {
+  document.getElementById("rotate-screen").style.display = "flex";
+}
+
+function nascondiRotate() {
+  document.getElementById("rotate-screen").style.display = "none";
+}
+
+function avviaCountdown(callback) {
+  const ctn = document.getElementById("countdown");
+  const num = document.getElementById("countdown-number");
+
+  let n = 3;
+  ctn.style.display = "flex";
+  num.textContent = n;
+
+  const interval = setInterval(() => {
+    n--;
+    if (n > 0) {
+      num.textContent = n;
+      num.classList.remove("countdown-number");
+      void num.offsetWidth;
+      num.classList.add("countdown-number");
+    } else {
+      num.textContent = "VIA!";
+      num.classList.remove("countdown-number");
+      void num.offsetWidth;
+      num.classList.add("countdown-number");
+
+      setTimeout(() => {
+        ctn.style.display = "none";
+        clearInterval(interval);
+        callback();
+      }, 800);
+    }
+  }, 1000);
+}
+
+/* ================================================================
+   ▶️ START DEL GIOCO CON ORIENTAMENTO
+   ================================================================ */
 document.getElementById("btn-start").onclick = () => {
 
   document.getElementById("start-screen").style.display = "none";
+
+  if (isVertical()) {
+    mostraRotate();
+  } else {
+    avviaCountdown(iniziaGioco);
+  }
+};
+
+/* Se cambia orientamento → controlliamo */
+window.addEventListener("orientationchange", () => {
+  if (!isVertical()) {
+    nascondiRotate();
+    avviaCountdown(iniziaGioco);
+  }
+});
+
+/* fallback Android */
+window.addEventListener("resize", () => {
+  if (!isVertical() && document.getElementById("rotate-screen").style.display !== "none") {
+    nascondiRotate();
+    avviaCountdown(iniziaGioco);
+  }
+});
+
+/* ================================================================
+   🚀 AVVIO VERO DEL GIOCO
+   ================================================================ */
+function iniziaGioco() {
 
   canvas.style.display = "block";
   resizeCanvas();
   document.getElementById("info").style.display = "block";
 
-  /* MUSICA */
   const musica = document.getElementById("musica");
   musica.currentTime = 0;
-
   musica.play().catch(() => {
     canvas.addEventListener("touchstart", () => musica.play(), { once:true });
     canvas.addEventListener("mousedown", () => musica.play(), { once:true });
   });
 
   gameLoop();
-};
+}
 
+/* ================================================================
+   🏆 TOP 10 (dalla schermata iniziale)
+   ================================================================ */
 document.getElementById("btn-top10").onclick = () => {
   document.getElementById("start-screen").style.display = "none";
   document.getElementById("fine").style.display = "flex";
   caricaClassifica();
 };
 
+/* ================================================================
+   🔄 RICOMINCIA
+   ================================================================ */
 document.getElementById("retry-btn").onclick = () => location.reload();
 
 </script>
