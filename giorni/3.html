@@ -35,31 +35,27 @@ h1 {
   font-weight: bold;
 }
 
-/* CANVAS WRAPPER */
+/* CANVAS */
 .canvas-wrapper {
   width: 100%;
   max-width: 520px;
   margin: 12px auto;
-  position: relative;
 }
 
 #gameCanvas {
   display: none;
   width: 100%;
   max-width: 520px;
-  height: auto;
   border: 2px solid #ffd700;
   border-radius: 14px;
   background: black;
 }
 
-/* NEVE sopra canvas */
+/* NEVE */
 .neve {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
   pointer-events: none;
   z-index: 5;
 }
@@ -103,7 +99,6 @@ h1 {
   top: 0; left: 0;
   width: 100%; height: 100%;
   background: rgba(0,0,0,0.65);
-  backdrop-filter: blur(5px);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -206,50 +201,35 @@ th, td {
 
 <h1>🎄 Giorno 3 – Snowman Escape</h1>
 
-<!-- HUD -->
 <div id="hud">❤️ 3 | ⭐ 0</div>
 
-<!-- CANVAS -->
 <div class="canvas-wrapper">
   <canvas id="gameCanvas"></canvas>
 </div>
 
-<!-- NEVE -->
 <canvas id="snow" class="neve"></canvas>
 
-<!-- CONTROLLI -->
 <div class="controls">
   <button id="btnRete" class="btn">🕸 PRENDI IL REGALO</button>
   <button id="btnSpara" class="btn">🎯 SPARA!</button>
 </div>
 
-<!-- START SCREEN -->
+<!-- START -->
 <div id="start-screen">
   <div class="start-box">
 
-    <p><b>Insieme a Babbo, cattura i regali e distruggi i pupazzi di neve che ti ostacolano il cammino!</b></p>
-
-    <h3>⭐ Sistema Punteggio</h3>
-
-    <p style="text-align:left;">
-    🎁 <b>Pacco catturato</b> → <b>+50 punti</b><br>
-    ☃️ <b>Snowman sparato</b> → <b>+15 punti</b><br>
-    💥 <b>Pacco colpito</b> → <b>-5 punti</b><br>
-    🕸 <b>Snowman catturato con rete</b> → <b>-1 vita</b><br>
-    ☃️➡️🎅 <b>Snowman tocca Babbo</b> → <b>-1 vita</b>
-    </p>
+    <p><b>Aiuta Babbo a recuperare i regali e sconfiggere gli snowman!</b></p>
 
     <button id="btn-start" class="start-btn">▶️ INIZIA</button>
     <button id="btn-top10" class="start-btn" style="background:#b8860b;">🏆 CLASSIFICA</button>
   </div>
 </div>
 
-
-<!-- END SCREEN -->
+<!-- FINE -->
 <div id="fine">
   <div class="classifica-box">
     <h2 id="messaggio"></h2>
-    <h3>🏆 Top 10 Globale</h3>
+    <h3>🏆 Top 10</h3>
     <table id="score-table">
       <tr><th>Nome</th><th>Punti</th></tr>
     </table>
@@ -259,9 +239,7 @@ th, td {
 </div>
 
 <script>
-/* =====================
-   FIREBASE INIT
-===================== */
+/* FIREBASE */
 firebase.initializeApp({
   apiKey: "AIzaSyBrI1yThI6zmnYwKE4OHbS8vhrUPrMsnsk",
   authDomain: "calendarioroccasicura.firebaseapp.com",
@@ -273,26 +251,22 @@ const db = firebase.database();
 const nomeReale = localStorage.getItem("utente") || "Ospite";
 const nomeMascherato = nomeReale[0] + Math.floor(Math.random()*900+100) + nomeReale.slice(1);
 
-/* =====================
-   CANVAS
-===================== */
+/* CANVAS */
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
 function resizeCanvas() {
   const w = Math.min(window.innerWidth - 20, 520);
-  const h = Math.floor(w * 0.6); // 5:3
+  const h = Math.floor(w * 0.6);
   canvas.width = w;
   canvas.height = h;
 }
 resizeCanvas();
 window.addEventListener("resize", resizeCanvas);
 
-/* =====================
-   IMMAGINI
-===================== */
+/* IMMAGINI */
 const imgBabbo = new Image();
-imgBabbo.src = "./img/babbo_3.png";
+imgBabbo.src = "./img/babbo_sacco.png";   // NUOVO BABBO
 
 const imgSnowman = new Image();
 imgSnowman.src = "./img/snowman.png";
@@ -306,34 +280,20 @@ imgRete.src = "./img/rete.png";
 const sfondo = new Image();
 sfondo.src = "./img/rocca.png";
 
-const pallineImgs = [
-  "./img/b1.png",
-  "./img/b2.png",
-  "./img/b3.png"
-].map(src => {
-  const i = new Image();
-  i.src = src;
-  return i;
-});
-let pallinaIndex = 0;
-
-/* =====================
-   VARIABILI
-===================== */
+/* VARIABILI */
 let running = false;
 let lives = 3;
 let score = 0;
 
 let babbo = { x: 0, y: 0, w: 0, h: 0 };
 
-/* BABBO CENTRATO E NON SCHIACCIATO */
 imgBabbo.onload = () => {
-  const scale = 0.45; // DIMENSIONE PERFETTA
+  const scale = 0.40;
   babbo.w = imgBabbo.width * scale;
   babbo.h = imgBabbo.height * scale;
 
   babbo.x = canvas.width / 2 - babbo.w / 2;
-  babbo.y = canvas.height * 0.60;
+  babbo.y = canvas.height * 0.58;
 };
 
 let oggetti = [];
@@ -344,9 +304,7 @@ function updateHUD() {
   document.getElementById("hud").textContent = `❤️ ${lives} | ⭐ ${score}`;
 }
 
-/* =====================
-   GENERA OGGETTI
-===================== */
+/* GENERA OGGETTI */
 function generaOggetto() {
   if (!running) return;
 
@@ -355,7 +313,7 @@ function generaOggetto() {
   oggetti.push({
     type: tipo,
     x: canvas.width + 40,
-    y: canvas.height * 0.35,   // OGGETTI PIÙ IN ALTO
+    y: canvas.height * 0.32,
     w: tipo === "snowman" ? 65 : 50,
     h: tipo === "snowman" ? 65 : 50,
     speed: 2
@@ -363,9 +321,7 @@ function generaOggetto() {
 }
 setInterval(generaOggetto, 1100);
 
-/* =====================
-   CONTROLLI
-===================== */
+/* SPARA */
 document.getElementById("btnSpara").addEventListener("click", () => {
   if (!running) return;
 
@@ -374,14 +330,11 @@ document.getElementById("btnSpara").addEventListener("click", () => {
     y: babbo.y + 25,
     w: 35,
     h: 35,
-    speed: 6,
-    img: pallineImgs[pallinaIndex],
-    angle: 0
+    speed: 6
   });
-
-  pallinaIndex = (pallinaIndex + 1) % pallineImgs.length;
 });
 
+/* RETE */
 document.getElementById("btnRete").addEventListener("click", () => {
   if (!running) return;
 
@@ -394,11 +347,8 @@ document.getElementById("btnRete").addEventListener("click", () => {
   };
 });
 
-/* =====================
-   COLLISIONI SAFE
-===================== */
+/* COLLISIONI */
 function hit(a, b) {
-  if (!a || !b) return false;
   return (
     a.x < b.x + b.w &&
     a.x + a.w > b.x &&
@@ -407,18 +357,13 @@ function hit(a, b) {
   );
 }
 
-/* =====================
-   GAME LOOP
-===================== */
+/* GAME LOOP */
 function updateGame() {
   if (!running) return;
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  /* Sfondo */
   ctx.drawImage(sfondo, 0, 0, canvas.width, canvas.height);
-
-  /* Babbo */
   ctx.drawImage(imgBabbo, babbo.x, babbo.y, babbo.w, babbo.h);
 
   /* OGGETTI */
@@ -431,13 +376,12 @@ function updateGame() {
       ctx.drawImage(imgGift, o.x, o.y, o.w, o.h);
 
     if (hit(babbo, o)) {
-      if (o.type === "snowman") {
-        lives--;
-      } else {
-        score += 50;
-      }
+      if (o.type === "snowman") lives--;
+      else score += 50;
+
       oggetti.splice(i, 1);
       updateHUD();
+
       if (lives <= 0) return gameOver();
     }
 
@@ -447,27 +391,21 @@ function updateGame() {
   /* PROIETTILI */
   proiettili.forEach((p, pi) => {
     p.x += p.speed;
-    p.angle += 0.2;
-
-    ctx.save();
-    ctx.translate(p.x + p.w/2, p.y + p.h/2);
-    ctx.rotate(p.angle);
-    ctx.drawImage(p.img, -p.w/2, -p.h/2, p.w, p.h);
-    ctx.restore();
+    ctx.fillStyle = "yellow";
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, 8, 0, Math.PI * 2);
+    ctx.fill();
 
     oggetti.forEach((o, oi) => {
-      if (hit(p, o)) {
+      if (hit({x:p.x-8,y:p.y-8,w:16,h:16}, o)) {
         if (o.type === "snowman") score += 15;
         else score -= 5;
-        if (score < 0) score = 0;
 
         oggetti.splice(oi, 1);
         proiettili.splice(pi, 1);
         updateHUD();
       }
     });
-
-    if (p.x > canvas.width + 50) proiettili.splice(pi, 1);
   });
 
   /* RETE */
@@ -483,7 +421,6 @@ function updateGame() {
         oggetti.splice(oi, 1);
         rete = null;
         updateHUD();
-        if (lives <= 0) return gameOver();
       }
     });
 
@@ -493,9 +430,7 @@ function updateGame() {
   requestAnimationFrame(updateGame);
 }
 
-/* =====================
-   COUNTDOWN
-===================== */
+/* COUNTDOWN */
 function startCountdown(cb) {
   const layer = document.getElementById("countdown");
   const num = document.getElementById("countdown-number");
@@ -511,9 +446,8 @@ function startCountdown(cb) {
     void num.offsetWidth;
     num.classList.add("countdown-number");
 
-    if (n > 0) {
-      num.textContent = n;
-    } else {
+    if (n > 0) num.textContent = n;
+    else {
       num.textContent = "VIA!";
       setTimeout(() => {
         clearInterval(timer);
@@ -524,9 +458,7 @@ function startCountdown(cb) {
   }, 1000);
 }
 
-/* =====================
-   START GAME
-===================== */
+/* START */
 function avviaGioco() {
   document.getElementById("start-screen").style.display = "none";
   canvas.style.display = "block";
@@ -538,9 +470,7 @@ document.getElementById("btn-start").addEventListener("click", () => {
   startCountdown(avviaGioco);
 });
 
-/* =====================
-   CLASSIFICA
-===================== */
+/* CLASSIFICA */
 function caricaClassifica() {
   const table = document.getElementById("score-table");
   table.innerHTML = "<tr><th>Nome</th><th>Punti</th></tr>";
@@ -586,9 +516,7 @@ document.getElementById("retry-btn").addEventListener("click", () => {
   location.reload();
 });
 
-/* =====================
-   NEVE ANIMATA
-===================== */
+/* NEVE */
 const snow = document.getElementById("snow");
 const sctx = snow.getContext("2d");
 
@@ -609,7 +537,6 @@ function createFlake() {
     s: Math.random() * 1 + 0.5
   });
 }
-
 setInterval(createFlake, 120);
 
 function updateSnow() {
@@ -621,6 +548,7 @@ function updateSnow() {
     sctx.beginPath();
     sctx.arc(f.x,f.y,f.r,0,Math.PI*2);
     sctx.fill();
+
     if (f.y > snow.height) flakes.splice(i,1);
   });
 
