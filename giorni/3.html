@@ -44,11 +44,12 @@ h1 {
 }
 
 #gameCanvas {
+  display: none;
   width: 100%;
-  aspect-ratio: 5 / 3;
+  max-width: 520px;
+  height: auto;
   border: 2px solid #ffd700;
   border-radius: 14px;
-  display: none;
   background: black;
 }
 
@@ -280,7 +281,7 @@ const ctx = canvas.getContext("2d");
 
 function resizeCanvas() {
   const w = Math.min(window.innerWidth - 20, 520);
-  const h = Math.floor(w * 0.6);
+  const h = Math.floor(w * 0.6); // 5:3
   canvas.width = w;
   canvas.height = h;
 }
@@ -323,7 +324,18 @@ let running = false;
 let lives = 3;
 let score = 0;
 
-let babbo = { x: 40, y: 200, w: 80, h: 80 };
+let babbo = { x: 0, y: 0, w: 0, h: 0 };
+
+/* BABBO CENTRATO E NON SCHIACCIATO */
+imgBabbo.onload = () => {
+  const scale = 0.45; // DIMENSIONE PERFETTA
+  babbo.w = imgBabbo.width * scale;
+  babbo.h = imgBabbo.height * scale;
+
+  babbo.x = canvas.width / 2 - babbo.w / 2;
+  babbo.y = canvas.height * 0.60;
+};
+
 let oggetti = [];
 let proiettili = [];
 let rete = null;
@@ -343,7 +355,7 @@ function generaOggetto() {
   oggetti.push({
     type: tipo,
     x: canvas.width + 40,
-    y: canvas.height * 0.55,
+    y: canvas.height * 0.35,   // OGGETTI PIÙ IN ALTO
     w: tipo === "snowman" ? 65 : 50,
     h: tipo === "snowman" ? 65 : 50,
     speed: 2
