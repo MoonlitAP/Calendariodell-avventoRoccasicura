@@ -28,7 +28,6 @@ h1 {
   color: #ffd700;
 }
 
-/* CANVAS */
 canvas {
   display: none;
   background: radial-gradient(circle, #d9f2ff, #9cd8ff);
@@ -38,27 +37,24 @@ canvas {
   touch-action: none;
 }
 
-/* INFO BAR */
 #info {
   display: none;
   width: 100%;
   padding: 10px 0;
+  font-size: 1.2em;
   background: rgba(0,0,0,0.3);
   border-top: 1px solid #ffd700;
-  font-size: 1.2em;
   position: fixed;
   bottom: 0;
   left: 0;
   z-index: 50;
 }
 
-/* START SCREEN */
 #start-screen {
   position: fixed;
   top:0; left:0;
   width:100%; height:100%;
   background: rgba(0,0,0,0.6);
-  backdrop-filter: blur(4px);
   display:flex;
   justify-content:center;
   align-items:center;
@@ -86,12 +82,8 @@ canvas {
   background:#7b0412;
   color:white;
 }
-.start-btn:hover {
-  background:#ffd700;
-  color:#000;
-}
+.start-btn:hover { background:#ffd700; color:#000; }
 
-/* END SCREEN */
 #fine {
   position: fixed;
   top:0; left:0;
@@ -107,10 +99,10 @@ canvas {
   width:90%;
   max-width:420px;
   background:#fffaf2;
-  color:#3a0000;
   border:2px solid #ffd700;
   border-radius:20px;
   padding:25px;
+  color:#3a0000;
 }
 
 .btn {
@@ -136,21 +128,21 @@ th, td {
 
 <body>
 
-<h1>⭐ Giorno 5 – Stella Furiosa PRO</h1>
+<h1>⭐ Giorno 5 – Stella Furiosa PRO (Click Edition)</h1>
 
-<!-- START SCREEN -->
 <div id="start-screen">
   <div class="start-box">
     <h2>✨ Tocca la Stella Furiosa! ✨</h2>
     <p>
       ⭐ Tocca la stella per fare punti!<br>
-      ❄️ Evita il ghiaccio (perdi 1 vita)<br>
-      ☄️ Il meteorite fa impazzire la traiettoria<br><br>
+      ❄️ NON toccare il ghiaccio — perdi 1 vita!<br>
+      ☄️ Il meteorite fa impazzire la stella<br><br>
+      ⭐→ dopo 10s → ⭐⭐<br>
+      ⭐⭐→ dopo 20s → ⭐⭐⭐⭐<br><br>
       ❤️ Hai 3 vite<br>
-      ⏳ 30 secondi<br><br>
-      🌟 Aumenta la difficoltà:<br>
-      1 stella → 2 stelle → 4 stelle!
+      ⏳ 30 secondi
     </p>
+
     <button id="btn-start" class="start-btn">▶️ INIZIA</button>
     <button id="btn-top10" class="start-btn" style="background:#b8860b;">🏆 CLASSIFICA</button>
   </div>
@@ -159,12 +151,11 @@ th, td {
 <canvas id="game"></canvas>
 <div id="info"></div>
 
-<!-- END SCREEN -->
 <div id="fine">
   <div class="classifica-box">
     <h2 id="fine-msg"></h2>
-
     <h3>🏆 Top 10</h3>
+
     <table id="score-table">
       <tr><th>Nome</th><th>Punti</th></tr>
     </table>
@@ -237,7 +228,7 @@ meteorImg.src = "../img/meteorite.png";
    GAME OBJECTS
 ========================================================= */
 
-/* STELLE MULTIPLE */
+/* MULTIPLE STARS */
 let stars = [
   {
     x: 150,
@@ -249,7 +240,6 @@ let stars = [
   }
 ];
 
-/* funzioni per aggiungere stelle */
 function spawnStar() {
   stars.push({
     x: Math.random() * (canvas.width - 60),
@@ -270,7 +260,6 @@ let meteor = null;
 /* particelle */
 let particles = [];
 
-/* HUD */
 let score = 0;
 let lives = 3;
 let timeLeft = 30;
@@ -292,7 +281,7 @@ function createParticles(x, y, color) {
 }
 
 /* =========================================================
-   MOVIMENTO STELLE
+   STARS MOVEMENT
 ========================================================= */
 function updateStars() {
   stars.forEach(s => {
@@ -302,21 +291,19 @@ function updateStars() {
     if (s.x < 0 || s.x + s.size > canvas.width) s.vx *= -1;
     if (s.y < 0 || s.y + s.size > canvas.height) s.vy *= -1;
 
-    /* scia neon */
     s.trail.push({ x: s.x + 30, y: s.y + 30, alpha: 1 });
     if (s.trail.length > 15) s.trail.shift();
   });
 }
 
 /* =========================================================
-   GHIACCIO
+   GHIACCIO (solo visivo, non colpisce le stelle)
 ========================================================= */
 function spawnIce() {
   ices.push({
     x: Math.random()*(canvas.width - 70),
     y: Math.random()*(canvas.height - 150),
-    size: 55,
-    hit: false
+    size: 55
   });
 
   setTimeout(() => {
@@ -341,7 +328,6 @@ function updateMeteor() {
 
   meteor.x += meteor.vx;
 
-  /* collisione meteorite-stella → deviazione */
   stars.forEach(s => {
     if (
       meteor.x < s.x + s.size &&
@@ -359,30 +345,45 @@ function updateMeteor() {
 }
 
 /* =========================================================
-   COLLISIONI
+   CLICK (stella = punti, ghiaccio = perdi vita)
 ========================================================= */
-function checkCollisions() {
+canvas.addEventListener("click", e => {
+  const rect = canvas.getBoundingClientRect();
+  const mx = e.clientX - rect.left;
+  const my = e.clientY - rect.top;
 
-  /* ghiaccio → toglie 1 vita */
-  ices.forEach(i => {
-    if (i.hit) return;
+  let clickedSomething = false;
 
-    stars.forEach(s => {
-      if (
-        s.x < i.x + i.size &&
-        s.x + s.size > i.x &&
-        s.y < i.y + i.size &&
-        s.y + s.size > i.y
-      ) {
-        i.hit = true;
-        lives--;
-        createParticles(i.x, i.y, "#b3e5fc");
-
-        if (lives <= 0) endGame();
-      }
-    });
+  /* STAR CLICK → +5 punti */
+  stars.forEach(s => {
+    if (
+      mx >= s.x &&
+      mx <= s.x + s.size &&
+      my >= s.y &&
+      my <= s.y + s.size
+    ) {
+      clickedSomething = true;
+      score += 5;
+      createParticles(s.x, s.y, "#fff176");
+    }
   });
-}
+
+  /* ICE CLICK → -1 vita */
+  ices.forEach(i => {
+    if (
+      mx >= i.x &&
+      mx <= i.x + i.size &&
+      my >= i.y &&
+      my <= i.y + i.size
+    ) {
+      clickedSomething = true;
+      lives--;
+      createParticles(i.x, i.y, "#b3e5fc");
+
+      if (lives <= 0) endGame();
+    }
+  });
+});
 
 /* =========================================================
    DRAW
@@ -390,12 +391,10 @@ function checkCollisions() {
 function draw() {
   ctx.clearRect(0,0,canvas.width,canvas.height);
 
-  /* meteorite */
-  if (meteor) {
+  if (meteor)
     ctx.drawImage(meteorImg, meteor.x, meteor.y, meteor.size, meteor.size);
-  }
 
-  /* scia neon per tutte le stelle */
+  /* scia neon */
   stars.forEach(s => {
     s.trail.forEach(t => {
       ctx.globalAlpha = t.alpha;
@@ -425,7 +424,6 @@ function draw() {
     ctx.globalAlpha = 1;
   });
 
-  /* HUD */
   document.getElementById("info").textContent =
     `⭐ ${score} | ❤️ ${lives} | ⏳ ${timeLeft}s`;
 }
@@ -436,9 +434,7 @@ function draw() {
 function update() {
   updateStars();
   updateMeteor();
-  checkCollisions();
 
-  /* particles update */
   particles.forEach(p => {
     p.x += p.vx;
     p.y += p.vy;
@@ -452,28 +448,7 @@ function update() {
 }
 
 /* =========================================================
-   CLICK STELLA (mouse + touch)
-========================================================= */
-canvas.addEventListener("click", e => {
-  const rect = canvas.getBoundingClientRect();
-  const mx = e.clientX - rect.left;
-  const my = e.clientY - rect.top;
-
-  stars.forEach(s => {
-    if (
-      mx >= s.x &&
-      mx <= s.x + s.size &&
-      my >= s.y &&
-      my <= s.y + s.size
-    ) {
-      score += 5;
-      createParticles(s.x, s.y, "#fff176");
-    }
-  });
-});
-
-/* =========================================================
-   TIMER CON AUMENTO DIFFICOLTÀ
+   TIMER + AUMENTO DIFFICOLTÀ
 ========================================================= */
 function startTimer() {
   const t = setInterval(() => {
@@ -481,10 +456,8 @@ function startTimer() {
 
     timeLeft--;
 
-    /* AUMENTO DIFFICOLTÀ */
-    if (timeLeft === 20 && stars.length < 2) {
+    if (timeLeft === 20 && stars.length < 2)
       spawnStar();
-    }
 
     if (timeLeft === 10 && stars.length < 4) {
       spawnStar();
@@ -499,6 +472,7 @@ function startTimer() {
   },1000);
 }
 </script>
+
 
 
 
@@ -523,13 +497,15 @@ document.getElementById("btn-start").onclick = () => {
     if (playing) spawnIce();
   }, 1200);
 
-  /* meteorite ogni ~2.5s */
+  /* meteorite con probabilità */
   setInterval(() => {
     if (playing && Math.random() < 0.4) spawnMeteor();
   }, 2500);
 };
 
-/* CLASSIFICA DIRETTA (dal menu iniziale) */
+/* =========================================================
+   CLASSIFICA DAL MENU INIZIALE
+========================================================= */
 document.getElementById("btn-top10").onclick = () => {
   document.getElementById("start-screen").style.display = "none";
   document.getElementById("fine").style.display = "flex";
@@ -548,7 +524,7 @@ function saveScore() {
 }
 
 /* =========================================================
-   CARICA TOP 10
+   CLASSIFICA TOP 10
 ========================================================= */
 function loadTop10() {
   const table = document.getElementById("score-table");
@@ -587,7 +563,9 @@ function endGame() {
   saveScore();
 }
 
-/* Riprova */
+/* =========================================================
+   RIPROVA
+========================================================= */
 document.getElementById("retry-btn").onclick = () => {
   location.reload();
 };
