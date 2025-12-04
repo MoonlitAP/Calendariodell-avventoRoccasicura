@@ -19,7 +19,6 @@ body {
   color: #fff;
   text-align: center;
   overflow: hidden;
-  height: 100vh;
 
   background: #7b0412 url("../img/sfondo_neve.jpg") center/cover no-repeat fixed;
   background-blend-mode: darken;
@@ -31,6 +30,7 @@ h1 {
   text-shadow: 2px 2px 4px #000;
 }
 
+/* CANVAS */
 canvas {
   display: none;
   background: url("../img/sfondo_neve.jpg") center/cover;
@@ -41,6 +41,7 @@ canvas {
   box-shadow: 0 0 20px #000;
 }
 
+/* INFO BAR */
 #info {
   display: none;
   width: 100%;
@@ -54,6 +55,7 @@ canvas {
   z-index: 50;
 }
 
+/* START PANEL */
 #panel {
   width: 90%;
   max-width: 420px;
@@ -66,6 +68,7 @@ canvas {
   box-shadow: 0 0 20px #000;
 }
 
+/* BUTTONS */
 .btn {
   width: 80%;
   padding: 14px;
@@ -77,8 +80,9 @@ canvas {
   color: white;
   cursor: pointer;
 }
-.btn:hover { background: #ffd700; color:#000; }
+.btn:hover { background: #ffd700; color: #000; }
 
+/* END SCREEN */
 #fine {
   display:none;
   position:fixed;
@@ -98,7 +102,7 @@ canvas {
   border-radius:20px;
   padding:25px;
   color:#3a0000;
-  box-shadow: 0 0 20px #000;
+  box-shadow:0 0 20px #000;
 }
 
 table {
@@ -115,7 +119,7 @@ th, td {
 
 <body>
 
-<h1>⭐ Giorno 5 – Stella Furiosa </h1>
+<h1>⭐ Giorno 5 – Stella Furiosa</h1>
 
 <div id="panel">
   <h2>✨ Come si gioca ✨</h2>
@@ -134,24 +138,23 @@ th, td {
 <canvas id="game"></canvas>
 <div id="info"></div>
 
+<!-- FINE PARTITA -->
 <div id="fine">
   <div class="classifica-box">
     <h2 id="fine-msg"></h2>
-
     <h3>🏆 Top 10</h3>
+
     <table id="score-table">
       <tr><th>Nome</th><th>Punti</th></tr>
     </table>
 
     <button id="retry-btn" class="btn" style="background:#d41e1e;">🔄 Riprova</button>
-    <a href="../calendario.html" class="btn">⬅ Calendario</a>
+    <a href="../calendario.html" class="btn">📅 Calendario</a>
   </div>
 </div>
 
 <script>
-/* =========================================================
-   FIREBASE
-========================================================= */
+/* FIREBASE */
 firebase.initializeApp({
   apiKey: "AIzaSyBrI1yThI6zmnYwKE4OHbS8vhrUPrMsnsk",
   authDomain: "calendarioroccasicura.firebaseapp.com",
@@ -163,35 +166,26 @@ firebase.initializeApp({
 });
 const db = firebase.database();
 
-/* =========================================================
-   NOME (MASCHERATO)
-========================================================= */
-const realName = localStorage.getItem("utente") || "Ospite";
-const user = realName[0] + Math.floor(Math.random()*900+100) + realName.slice(1);
+const nameReal = localStorage.getItem("utente") || "Ospite";
+const user = nameReal[0] + Math.floor(Math.random()*900+100) + nameReal.slice(1);
 
-/* =========================================================
-   CANVAS
-========================================================= */
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
 
 function resizeCanvas(){
   const W = window.innerWidth;
   const H = window.innerHeight;
-
   if(W < 700){
     canvas.width = W - 20;
     canvas.height = H * 0.70;
   } else {
-    canvas.width = 900;
-    canvas.height = 540;
+    canvas.width = 950;
+    canvas.height = 550;
   }
 }
 resizeCanvas();
 
-/* =========================================================
-   IMMAGINI (percorsi corretti)
-========================================================= */
+/* IMMAGINI */
 const starImg = new Image();
 starImg.src = "../img/stella_cartoon.png";
 
@@ -201,57 +195,95 @@ iceImg.src = "../img/blocco_ghiaccio.png";
 const meteorImg = new Image();
 meteorImg.src = "../img/meteorite.png";
 
-/* =========================================================
-   OGGETTI
-========================================================= */
+/* GAME OBJECTS */
 let stars = [
-  { x:150, y:150, size:60, vx:2.5, vy:2.5, trail:[], hitbox:85 }
+  { x:150, y:150, size:70, vx:3, vy:2, trail:[] }
 ];
 
-function spawnStar(){
-  stars.push({
-    x:Math.random()*(canvas.width-60),
-    y:Math.random()*(canvas.height-60),
-    size:60,
-    vx:(Math.random()*2+1.5),
-    vy:(Math.random()*2+1.5),
-    trail:[],
-    hitbox:85
+let ices = [];
+let meteor = null;
+let particles = [];
+let score = 0;
+let lives = 3;
+let timeLeft = 30;
+let playing = false;
+
+function createParticles(x,y,color){
+  for(let i=0;i<10;i++){
+    particles.push({
+      x,y,
+      vx:(Math.random()*4-2),
+      vy:(Math.random()*4-2),
+      alpha:1,
+      color
+    });
+  }
+}
+
+function updateStars(){
+  stars.forEach(s=>{
+    s.vx *= 1.002;
+    s.vy *= 1.002;
+
+    s.x += s.vx;
+    s.y += s.vy;
+
+    if(s.x<0 || s.x+s.size>canvas.width) s.vx *= -1;
+    if(s.y<0 || s.y+s.size>canvas.height) s.vy *= -1;
+
+    s.trail.push({x:s.x+s.size/2, y:s.y+s.size/2, alpha:1});
+    if(s.trail.length > 15) s.trail.shift();
   });
 }
 
-let ices=[];
-let meteor=null;
-let particles=[];
-let score=0;
-let lives=3;
-let timeLeft=30;
-let playing=false;
-
-/* =========================================================
-   HITBOX MIGLIORATA (OPZIONE C)
-========================================================= */
-function isHit(mx,my,s){
-  return (
-    mx >= s.x - (s.hitbox - s.size)/2 &&
-    mx <= s.x + s.size + (s.hitbox - s.size)/2 &&
-    my >= s.y - (s.hitbox - s.size)/2 &&
-    my <= s.y + s.size + (s.hitbox - s.size)/2
-  );
+function spawnIce(){
+  ices.push({
+    x: Math.random()*(canvas.width-70),
+    y: Math.random()*(canvas.height-150),
+    size: 60
+  });
+  setTimeout(()=>ices.shift(),2500);
 }
 
-/* =========================================================
-   CLICK
-========================================================= */
-canvas.addEventListener("click", e=>{
-  const rect = canvas.getBoundingClientRect();
-  const mx = e.clientX - rect.left;
-  const my = e.clientY - rect.top;
+function spawnMeteor(){
+  meteor = {
+    x: canvas.width,
+    y: Math.random()*(canvas.height*0.5),
+    vx: -5,
+    size: 65
+  };
+}
+
+function updateMeteor(){
+  if(!meteor) return;
+
+  meteor.x += meteor.vx;
 
   stars.forEach(s=>{
-    if(isHit(mx,my,s)){
+    if(
+      meteor.x < s.x+s.size &&
+      meteor.x+meteor.size > s.x &&
+      meteor.y < s.y+s.size &&
+      meteor.y+meteor.size > s.y
+    ){
+      s.vx = (Math.random()*6-3);
+      s.vy = (Math.random()*6-3);
+      createParticles(s.x,s.y,"#ffa726");
+    }
+  });
+
+  if(meteor.x < -70) meteor = null;
+}
+
+canvas.addEventListener("click", e=>{
+  const r = canvas.getBoundingClientRect();
+  const mx = e.clientX - r.left;
+  const my = e.clientY - r.top;
+
+  stars.forEach(s=>{
+    if(mx>=s.x-10 && mx<=s.x+s.size+10 && my>=s.y-10 && my<=s.y+s.size+10){
       score += 5;
-      particles.push({x:s.x,y:s.y,alpha:1});
+      createParticles(s.x,s.y,"#fff176");
     }
   });
 
@@ -263,25 +295,34 @@ canvas.addEventListener("click", e=>{
   });
 });
 
-/* =========================================================
-   MOVIMENTO
-========================================================= */
-function updateStars(){
-  stars.forEach(s=>{
-    s.x += s.vx;
-    s.y += s.vy;
-
-    if(s.x<0 || s.x+s.size>canvas.width) s.vx*=-1;
-    if(s.y<0 || s.y+s.size>canvas.height) s.vy*=-1;
-  });
-}
-
 function draw(){
   ctx.clearRect(0,0,canvas.width,canvas.height);
 
-  stars.forEach(s=> ctx.drawImage(starImg,s.x,s.y,s.size,s.size));
-  ices.forEach(i=> ctx.drawImage(iceImg,i.x,i.y,i.size,i.size));
-  if(meteor) ctx.drawImage(meteorImg,meteor.x,meteor.y,meteor.size,meteor.size);
+  if(meteor)
+    ctx.drawImage(meteorImg, meteor.x, meteor.y, meteor.size, meteor.size);
+
+  stars.forEach(s=>{
+    s.trail.forEach(t=>{
+      ctx.globalAlpha = t.alpha;
+      ctx.fillStyle = "#fff67a";
+      ctx.beginPath();
+      ctx.arc(t.x, t.y, 7, 0, Math.PI*2);
+      ctx.fill();
+      ctx.globalAlpha = 1;
+    });
+  });
+
+  stars.forEach(s=> ctx.drawImage(starImg, s.x, s.y, s.size, s.size));
+  ices.forEach(i=> ctx.drawImage(iceImg, i.x, i.y, i.size, i.size));
+
+  particles.forEach(p=>{
+    p.x+=p.vx; p.y+=p.vy; p.alpha -= 0.02;
+    ctx.globalAlpha = p.alpha;
+    ctx.fillStyle = p.color;
+    ctx.fillRect(p.x,p.y,5,5);
+    ctx.globalAlpha = 1;
+  });
+  particles = particles.filter(p=>p.alpha>0);
 
   document.getElementById("info").textContent =
     `⭐ ${score} | ❤️ ${lives} | ⏳ ${timeLeft}s`;
@@ -289,20 +330,20 @@ function draw(){
 
 function update(){
   updateStars();
-  if(playing) requestAnimationFrame(update);
+  updateMeteor();
   draw();
+
+  if(playing) requestAnimationFrame(update);
 }
 
-/* =========================================================
-   TIMER
-========================================================= */
 function startTimer(){
-  const t=setInterval(()=>{
+  const t = setInterval(()=>{
     if(!playing) return clearInterval(t);
+
     timeLeft--;
 
-    if(timeLeft===20) spawnStar();
-    if(timeLeft===10){ spawnStar(); spawnStar(); spawnStar(); }
+    if(timeLeft===20) stars.push({x:200,y:100,size:70,vx:3,vy:2,trail:[]});
+    if(timeLeft===10){ stars.push({x:300,y:120,size:70,vx:4,vy:3,trail:[]}); }
 
     if(timeLeft<=0){
       clearInterval(t);
@@ -311,73 +352,67 @@ function startTimer(){
   },1000);
 }
 
-/* =========================================================
-   START
-========================================================= */
-document.getElementById("btn-start").onclick=()=>{
-  document.getElementById("panel").style.display="none";
-  canvas.style.display="block";
-  document.getElementById("info").style.display="block";
+document.getElementById("btn-start").onclick = ()=>{
+  document.getElementById("panel").style.display = "none";
+  canvas.style.display = "block";
+  document.getElementById("info").style.display = "block";
 
-  playing=true;
+  playing = true;
   startTimer();
   update();
+
+  setInterval(()=>{ if(playing) spawnIce(); },1200);
+
+  // METEORITI OGNI 3 SECONDI – versione A
+  setInterval(()=>{ 
+    if(playing && Math.random() < 0.55) spawnMeteor(); 
+  }, 3000);
 };
 
-/* =========================================================
-   CLASSIFICA
-========================================================= */
-document.getElementById("btn-top10").onclick=()=>{
-  document.getElementById("panel").style.display="none";
-  document.getElementById("fine").style.display="flex";
+document.getElementById("btn-top10").onclick = ()=>{
+  document.getElementById("panel").style.display = "none";
+  document.getElementById("fine").style.display = "flex";
   loadTop10();
 };
 
 function loadTop10(){
-  const table=document.getElementById("score-table");
-  table.innerHTML="<tr><th>Nome</th><th>Punti</th></tr>";
+  const table = document.getElementById("score-table");
+  table.innerHTML = "<tr><th>Nome</th><th>Punti</th></tr>";
 
   db.ref("punteggi/giorno5")
     .orderByChild("punti")
     .limitToLast(10)
-    .once("value",snap=>{
+    .once("value", snap=>{
       let arr=[];
-      snap.forEach(c=>arr.push(c.val()));
+      snap.forEach(c=> arr.push(c.val()));
       arr.sort((a,b)=> b.punti - a.punti);
 
       arr.forEach(r=>{
-        const tr=document.createElement("tr");
-        tr.innerHTML=`<td>${r.nome}</td><td>${r.punti}</td>`;
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td>${r.nome}</td><td>${r.punti}</td>`;
         table.appendChild(tr);
       });
     });
 }
 
-/* =========================================================
-   GAME OVER
-========================================================= */
 function endGame(){
-  playing=false;
-  canvas.style.display="none";
-  document.getElementById("info").style.display="none";
-  document.getElementById("fine").style.display="flex";
+  playing = false;
+  canvas.style.display = "none";
+  document.getElementById("info").style.display = "none";
+  document.getElementById("fine").style.display = "flex";
 
   document.getElementById("fine-msg").innerHTML =
     `⭐ Hai totalizzato <b>${score}</b> punti!`;
 
   db.ref("punteggi/giorno5").push({
-    nome:user,
-    punti:score,
-    timestamp:Date.now()
+    nome: user,
+    punti: Number(score),
+    timestamp: Date.now()
   });
 }
 
-/* =========================================================
-   RIPROVA
-========================================================= */
-document.getElementById("retry-btn").onclick=()=>location.reload();
+document.getElementById("retry-btn").onclick = ()=> location.reload();
 </script>
 
 </body>
 </html>
-
