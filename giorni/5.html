@@ -202,7 +202,7 @@ const real = localStorage.getItem("utente") || "Ospite";
 const user = real[0] + Math.floor(Math.random()*900+100) + real.slice(1);
 
 /* VARIABILI PER GLI INTERVALS (NUOVO) */
-let iceInterval, meteorInterval; 
+let iceInterval, meteorInterval; 
 
 
 /* CANVAS SETUP */
@@ -464,6 +464,7 @@ function endGame(){
     `⭐ Hai totalizzato <b>${score}</b> punti!`;
 
   // --- LOGICA SALVATAGGIO CLASSIFICA ---
+  // Vengono salvati solo i record personali massimi nella cartella classifica_max
   const userRef = db.ref("classifica_max/giorno5").child(real); 
 
   // 1. Controlla il punteggio massimo esistente per l'utente 'real'
