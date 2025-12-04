@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>🎅 Giorno 5 – Babbo Natale raccogli i regali!</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>⭐ Giorno 5 – Stella Furiosa Winter Edition</title>
 
-<!-- FONT -->
 <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;700&display=swap" rel="stylesheet">
 
 <!-- FIREBASE -->
@@ -16,70 +15,102 @@
 body {
   margin: 0;
   padding: 0;
-  background-color: #7b0412;
-  font-family: 'Ubuntu', sans-serif;
+  background: #7b0412;
+  font-family: "Ubuntu", sans-serif;
   color: #fff;
   text-align: center;
   overflow: hidden;
   height: 100vh;
 }
 
+/* TITOLO */
 h1 {
-  color: #ffd700;
   margin-top: 10px;
+  color: #ffd700;
 }
 
 /* CANVAS */
 canvas {
   display: none;
   margin: 0 auto;
-  background: url("../img/gioco1_sfondo.png") center/cover no-repeat;
-  border: 3px solid #f5d97c;
-  border-radius: 10px;
+  background: linear-gradient(#91d4ff, #e0f7ff);
+  border: 3px solid #ffd700;
+  border-radius: 15px;
   touch-action: none;
 }
 
-/* INFO BAR */
-.info {
+/* INFO */
+#info {
   display: none;
   width: 100%;
   padding: 10px 0;
-  background: rgba(0, 0, 0, 0.35);
-  border-top: 1px solid #f5d97c;
   font-size: 1.2em;
+  background: rgba(0,0,0,0.35);
   position: fixed;
   bottom: 0;
   left: 0;
-  z-index: 50;
+  border-top: 1px solid #ffd700;
+  z-index: 40;
 }
 
-/* POPUP FINALE */
-#fine {
+/* START SCREEN */
+#start-screen {
   position: fixed;
   top: 0; left: 0;
   width: 100%; height: 100%;
-  background: rgba(0,0,0,0.65);
+  background: rgba(0,0,0,0.6);
   backdrop-filter: blur(4px);
-  z-index: 9999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9998;
+}
+
+.start-box {
+  background: #fffaf2;
+  width: 90%;
+  max-width: 420px;
+  padding: 25px;
+  border: 2px solid #ffd700;
+  border-radius: 20px;
+  color: #3a0000;
+}
+
+.start-btn {
+  width: 80%;
+  padding: 14px;
+  margin-top: 10px;
+  font-size: 1.1em;
+  border: none;
+  border-radius: 30px;
+  background: #7b0412;
+  color: #fff;
+}
+.start-btn:hover {
+  background: #ffd700;
+  color: #000;
+}
+
+/* POPUP FINE */
+#fine {
+  position: fixed;
+  top:0; left:0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.65);
   display: none;
   justify-content: center;
   align-items: center;
+  z-index: 9999;
 }
 
 .classifica-box {
   background: #fffaf2;
+  width: 90%;
+  max-width: 420px;
   padding: 25px;
   border-radius: 20px;
-  width: 90%;
-  max-width: 450px;
   border: 2px solid #ffd700;
-  color: #400000;
-  animation: popup .4s ease-out;
-}
-
-@keyframes popup {
-  from { transform: scale(.7); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
+  color: #3a0000;
 }
 
 .btn {
@@ -87,12 +118,8 @@ canvas {
   margin-top: 15px;
   padding: 12px 30px;
   border-radius: 30px;
-  font-weight: bold;
-  text-decoration: none;
-  cursor: pointer;
-  color: #fff;
   background: #7b0412;
-  transition: .3s;
+  color: #fff;
 }
 .btn:hover {
   background: #ffd700;
@@ -101,93 +128,59 @@ canvas {
 
 table {
   width: 100%;
-  margin-top: 15px;
+  margin-top: 10px;
 }
 th, td {
   padding: 8px;
-  text-align: center;
   border-bottom: 1px solid #d7bb5f;
-}
-
-/* MENU INIZIALE */
-#start-screen {
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background: rgba(0,0,0,0.60);
-  backdrop-filter: blur(4px);
-  z-index: 9998;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.start-box {
-  background: #fffaf2;
-  padding: 30px;
-  border-radius: 20px;
-  width: 90%;
-  max-width: 420px;
-  border: 2px solid #ffd700;
-  color: #400000;
   text-align: center;
-}
-
-.start-btn {
-  width: 80%;
-  margin: 10px auto;
-  padding: 14px;
-  border-radius: 30px;
-  font-size: 1.1em;
-  cursor: pointer;
-  background: #7b0412;
-  color: white;
-  border: none;
-}
-.start-btn:hover {
-  background: #ffd700;
-  color: black;
 }
 </style>
 </head>
 
 <body>
 
-<h1>🎅 Giorno 5 – Babbo Natale raccogli i regali!</h1>
+<h1>⭐ Giorno 5 – Stella Furiosa Winter Edition</h1>
 
-<!-- MENU INIZIALE -->
+<!-- START SCREEN -->
 <div id="start-screen">
   <div class="start-box">
-    <h2>🎄 Inizia il Gioco!</h2>
-    <p>Muovi Babbo Natale a destra e sinistra<br> e raccogli più regali possibile evitando le bombe.</p>
+    <h2>✨ Tocca la Stella Furiosa! ✨</h2>
+    <p>
+      ⭐ Tocca la stella per fare punti!<br>
+      ❄️ Evita i blocchi di ghiaccio – perdi una vita!<br>
+      ☄️ Il meteorite fa impazzire la traiettoria... 😱<br><br>
+      ❤️ Hai 3 vite!<br>
+      ⏳ Hai 30 secondi!
+    </p>
 
-    <button id="btn-start" class="start-btn">▶️ INIZIA GIOCO</button>
-    <button id="btn-top10" class="start-btn" style="background:#b8860b;">🏆 CLASSIFICA GLOBALE</button>
+    <button id="btn-start" class="start-btn">▶️ INIZIA</button>
+    <button id="btn-top10" class="start-btn" style="background:#b8860b;">🏆 CLASSIFICA</button>
   </div>
 </div>
 
 <canvas id="game"></canvas>
-<div id="info" class="info">🎁 Punteggio: 0 | ⏱️ 60s</div>
+<div id="info"></div>
 
-<!-- POPUP CLASSIFICA -->
+<!-- POPUP FINALE -->
 <div id="fine">
   <div class="classifica-box">
-    <h2 id="messaggio"></h2>
-    <h3>🏆 Top 10 Globale</h3>
+    <h2 id="fine-msg"></h2>
 
+    <h3>🏆 Top 10</h3>
     <table id="score-table">
       <tr><th>Nome</th><th>Punti</th></tr>
     </table>
 
     <button id="retry-btn" class="btn" style="background:#d41e1e;">🔄 Riprova</button>
-    <a href="../calendario.html" class="btn">⬅ Torna al Calendario</a>
+    <a href="../calendario.html" class="btn">⬅ Calendario</a>
   </div>
 </div>
 
 <script>
-/* ========================================= */
-/* 🔥 FIREBASE */
-/* ========================================= */
+/* ================================
+   FIREBASE
+================================ */
 firebase.initializeApp({
   apiKey: "AIzaSyBrI1yThI6zmnYwKE4OHbS8vhrUPrMsnsk",
   authDomain: "calendarioroccasicura.firebaseapp.com",
@@ -197,220 +190,264 @@ firebase.initializeApp({
   messagingSenderId: "38731898044",
   appId: "1:38731898044:web:e89bcfae7c64239fec44b9"
 });
-
 const db = firebase.database();
 
-/* ========================================= */
-/* 👤 NOME MASCHERATO */
-/* ========================================= */
+/* USER */
 const nomeReale = localStorage.getItem("utente") || "Ospite";
-const nomeMascherato =
+const user =
   nomeReale[0] + Math.floor(Math.random()*900+100) + nomeReale.slice(1);
 
-/* ========================================= */
-/* 🎮 CANVAS */
-/* ========================================= */
+/* CANVAS */
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
 
 function resizeCanvas() {
   const W = window.innerWidth;
   const H = window.innerHeight;
-
   if (W < 700) {
     canvas.width = W - 20;
     canvas.height = H * 0.70;
   } else {
     canvas.width = 900;
-    canvas.height = 520;
+    canvas.height = 550;
   }
 }
 resizeCanvas();
 window.addEventListener("resize", resizeCanvas);
 
-/* ========================================= */
-/* 🎅 SANTA */
-/* ========================================= */
-const santa = {
+/* IMMAGINI */
+const starImg = new Image();
+starImg.src = "../img/stella_cartoon.png";
+
+const iceImg = new Image();
+iceImg.src = "../img/blocco_ghiaccio.png";
+
+const meteorImg = new Image();
+meteorImg.src = "../img/meteorite.png";
+
+/* STELLA */
+let star = {
   x: 100,
-  y: canvas.height - 120,
-  w: 70,
-  h: 90,
-  vy: 0,
-  jumping: false,
-  speed: 12
+  y: 100,
+  size: 60,
+  vx: 2,
+  vy: 2,
+  trail: []
 };
 
-const santaImg = new Image();
-santaImg.src = "../img/babbo.png";
+/* BOMBE/ICE */
+let ices = [];
 
-const giftImg = new Image();
-giftImg.src = "../img/gift.png";
+/* METEORITE */
+let meteor = null;
 
-const bombImg = new Image();
-bombImg.src = "../img/bomba.png";
+/* PARTICELLE */
+let particles = [];
 
-let objects = [];
-const keys = {};
-
-document.addEventListener("keydown", e => keys[e.key] = true);
-document.addEventListener("keyup",   e => keys[e.key] = false);
-
-document.addEventListener("keydown", e => {
-  if (e.code === "Space" || e.code === "ArrowUp") {
-    e.preventDefault();
-    jump();
-  }
-});
-
-/* TOUCH + MOUSE */
-canvas.addEventListener("mousedown", jump);
-canvas.addEventListener("touchstart", jump);
-
-canvas.addEventListener("mousemove", e => {
-  if (e.buttons > 0) {
-    const r = canvas.getBoundingClientRect();
-    santa.x = e.clientX - r.left - santa.w/2;
-  }
-});
-
-canvas.addEventListener("touchmove", e => {
-  e.preventDefault();
-  const r = canvas.getBoundingClientRect();
-  santa.x = e.touches[0].clientX - r.left - santa.w/2;
-}, { passive:false });
-
-/* SALTO */
-function jump() {
-  if (!santa.jumping) {
-    santa.vy = -15;
-    santa.jumping = true;
-  }
-}
-
-/* TIMER */
+/* GAME VARS */
 let score = 0;
-let timeLeft = 60;
+let lives = 3;
+let timeLeft = 30;
+let playing = false;
 
-function updateTimer() {
-  const interval = setInterval(() => {
-    timeLeft--;
-    if (timeLeft <= 0) {
-      clearInterval(interval);
-      endGame();
-    }
-  }, 1000);
+/* ================================
+   PARTICELLE
+================================ */
+function createParticles(x, y, color) {
+  for (let i=0; i<10; i++) {
+    particles.push({
+      x, y,
+      vx: (Math.random()*4 -2),
+      vy: (Math.random()*4 -2),
+      alpha: 1,
+      color
+    });
+  }
 }
 
-/* SPAWN */
-function spawnObject() {
-  const isBomb = Math.random() < 0.25;
-
-  const obj = {
-    x: Math.random() * (canvas.width - 40),
-    y: canvas.height - 160 - Math.random()*100,
-    size: 40,
-    type: isBomb ? "bomb" : "gift",
-    fade: false
+/* ================================
+   SPAWN METEORITE
+================================ */
+function spawnMeteor() {
+  meteor = {
+    x: canvas.width,
+    y: Math.random()*canvas.height*0.5,
+    vx: -6,
+    size: 50
   };
+  setTimeout(() => {
+    if (meteor) {
+      /* deviare la stella */
+      star.vx = (Math.random()*5 - 2.5);
+      star.vy = (Math.random()*5 - 2.5);
+    }
+  }, 300);
+}
 
-  objects.push(obj);
+/* ================================
+   SPAWN BOMBA GHIACCIO
+================================ */
+function spawnIce() {
+  ices.push({
+    x: Math.random()*(canvas.width-60),
+    y: Math.random()*(canvas.height-120)+60,
+    size: 50
+  });
 
   setTimeout(() => {
-    obj.fade = true;
-    setTimeout(() => {
-      objects = objects.filter(o => o !== obj);
-    }, 300);
-  }, 2000);
+    ices.shift();
+  }, 2500);
 }
 
-let spawnInterval = null;
+/* ================================
+   UPDATE STELLA + SCIA
+================================ */
+function moveStar() {
+  star.x += star.vx;
+  star.y += star.vy;
 
-/* MOVIMENTO */
-function moveSanta() {
-  if (keys["ArrowLeft"])  santa.x -= santa.speed;
-  if (keys["ArrowRight"]) santa.x += santa.speed;
+  if (star.x < 0 || star.x+star.size > canvas.width) star.vx *= -1;
+  if (star.y < 0 || star.y+star.size > canvas.height) star.vy *= -1;
 
-  santa.y += santa.vy;
-  santa.vy += 0.6;
+  star.trail.push({x: star.x, y: star.y, alpha: 1});
+  if (star.trail.length > 20) star.trail.shift();
+}
 
-  if (santa.y > canvas.height - 120) {
-    santa.y = canvas.height - 120;
-    santa.vy = 0;
-    santa.jumping = false;
+/* ================================
+   DRAW
+================================ */
+function draw() {
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+
+  /* meteorite */
+  if (meteor) {
+    ctx.drawImage(meteorImg, meteor.x, meteor.y, meteor.size, meteor.size);
   }
 
-  if (santa.x < 0) santa.x = 0;
-  if (santa.x + santa.w > canvas.width) santa.x = canvas.width - santa.w;
-}
-
-/* COLLISIONI */
-function checkCollisions() {
-  objects.forEach(o => {
-    if (
-      santa.x < o.x + o.size &&
-      santa.x + santa.w > o.x &&
-      santa.y < o.y + o.size &&
-      santa.y + santa.h > o.y
-    ) {
-      objects = objects.filter(x => x !== o);
-      if (o.type === "gift") score += 10;
-      else score -= 5;
-    }
-  });
-}
-
-/* DISEGNO */
-function draw() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  ctx.drawImage(santaImg, santa.x, santa.y, santa.w, santa.h);
-
-  objects.forEach(o => {
-    ctx.globalAlpha = o.fade ? 0.5 : 1;
-    ctx.drawImage(
-      o.type === "gift" ? giftImg : bombImg,
-      o.x, o.y, o.size, o.size
-    );
+  /* trail */
+  star.trail.forEach(t => {
+    ctx.globalAlpha = t.alpha;
+    ctx.fillStyle = "#fff59d";
+    ctx.beginPath();
+    ctx.arc(t.x+30, t.y+30, 8, 0, Math.PI*2);
+    ctx.fill();
     ctx.globalAlpha = 1;
   });
 
+  /* stella */
+  ctx.drawImage(starImg, star.x, star.y, star.size, star.size);
+
+  /* ghiacci */
+  ices.forEach(i => {
+    ctx.drawImage(iceImg, i.x, i.y, i.size, i.size);
+  });
+
+  /* particelle */
+  particles.forEach(p => {
+    ctx.globalAlpha = p.alpha;
+    ctx.fillStyle = p.color;
+    ctx.fillRect(p.x, p.y, 5, 5);
+    ctx.globalAlpha = 1;
+  });
+
+  /* HUD */
   document.getElementById("info").textContent =
-    `🎁 ${nomeMascherato} | Punti: ${score} | ⏱️ ${timeLeft}s`;
+    `⭐ ${score} | ❤️ ${lives} | ⏳ ${timeLeft}s`;
 }
 
-/* LOOP */
-function gameLoop() {
-  moveSanta();
-  checkCollisions();
+/* ================================
+   UPDATE
+================================ */
+function update() {
+
+  /* stella */
+  moveStar();
+
+  /* meteor */
+  if (meteor) {
+    meteor.x += meteor.vx;
+    if (meteor.x < -60) meteor = null;
+  }
+
+  /* particelle */
+  particles.forEach(p => {
+    p.x += p.vx;
+    p.y += p.vy;
+    p.alpha -= 0.02;
+  });
+  particles = particles.filter(p => p.alpha > 0);
+
+  /* collisioni */
+  ices.forEach(i => {
+    if (
+      star.x < i.x+i.size &&
+      star.x+star.size > i.x &&
+      star.y < i.y+i.size &&
+      star.y+star.size > i.y
+    ) {
+      lives--;
+      createParticles(i.x, i.y, "#b3e5fc");
+      ices = ices.filter(x => x !== i);
+      if (lives <= 0) endGame();
+    }
+  });
+
   draw();
 
-  if (timeLeft > 0) requestAnimationFrame(gameLoop);
+  if (playing) requestAnimationFrame(update);
 }
 
-/* FINE GIOCO */
-function endGame() {
-  canvas.style.display = "none";
-  document.getElementById("info").style.display = "none";
-  document.getElementById("fine").style.display = "flex";
+/* ================================
+   TOUCH/CLOCK
+================================ */
+canvas.addEventListener("click", () => {
+  score += 5;
+  createParticles(star.x, star.y, "#fff176");
+});
 
-  document.getElementById("messaggio").textContent =
-    `🎉 Bravo ${nomeMascherato}! Hai totalizzato ${score} punti!`;
-
-  salvaOnline(nomeMascherato, score);
+/* ================================
+   TIMER
+================================ */
+function startTimer() {
+  const t = setInterval(() => {
+    timeLeft--;
+    if (timeLeft <= 0 || !playing) {
+      clearInterval(t);
+      endGame();
+    }
+  },1000);
 }
 
-/* SALVATAGGIO */
-function salvaOnline(nome, punti) {
+/* ================================
+   START GAME
+================================ */
+document.getElementById("btn-start").onclick = () => {
+  document.getElementById("start-screen").style.display = "none";
+  canvas.style.display = "block";
+  document.getElementById("info").style.display = "block";
+
+  playing = true;
+  startTimer();
+
+  setInterval(spawnIce, 1200);
+  setInterval(() => { if (Math.random()<0.4) spawnMeteor(); }, 3000);
+
+  update();
+};
+
+/* ================================
+   CLASSIFICA
+================================ */
+function salvaOnline() {
   const ref = db.ref("punteggi/giorno5").push();
   ref.set({
-    nome,
-    punti: Number(punti),
+    nome: user,
+    punti: score,
     timestamp: Date.now()
-  }).then(() => caricaClassifica());
+  })
+  .then(() => caricaClassifica());
 }
 
-/* CARICA TOP10 */
 function caricaClassifica() {
   const table = document.getElementById("score-table");
   table.innerHTML = "<tr><th>Nome</th><th>Punti</th></tr>";
@@ -419,49 +456,42 @@ function caricaClassifica() {
     .orderByChild("punti")
     .limitToLast(10)
     .once("value", snap => {
-      let list = [];
+      let arr = [];
+      snap.forEach(c => arr.push(c.val()));
+      arr.sort((a,b)=> b.punti - a.punti);
 
-      snap.forEach(child => {
-        const val = child.val();
-        list.push({
-          nome: val.nome,
-          punti: Number(val.punti)
-        });
-      });
-
-      list.sort((a,b) => b.punti - a.punti);
-
-      list.forEach(row => {
+      arr.forEach(r => {
         const tr = document.createElement("tr");
-        tr.innerHTML = `<td>${row.nome}</td><td>${row.punti}</td>`;
+        tr.innerHTML = `<td>${r.nome}</td><td>${r.punti}</td>`;
         table.appendChild(tr);
       });
     });
 }
 
-document.getElementById("btn-start").addEventListener("click", () => {
-  document.getElementById("start-screen").style.display = "none";
-  canvas.style.display = "block";
-  document.getElementById("info").style.display = "block";
+/* ================================
+   FINE GIOCO
+================================ */
+function endGame() {
+  playing = false;
+  canvas.style.display = "none";
+  document.getElementById("info").style.display = "none";
+  document.getElementById("fine").style.display = "flex";
 
-  spawnInterval = setInterval(spawnObject, 1300);
-  updateTimer();
-  gameLoop();
-});
+  document.getElementById("fine-msg").innerHTML =
+    `⭐ Hai totalizzato <b>${score}</b> punti!`;
 
-document.getElementById("btn-top10").addEventListener("click", () => {
+  salvaOnline();
+}
+
+document.getElementById("btn-top10").onclick = () => {
   document.getElementById("start-screen").style.display = "none";
   document.getElementById("fine").style.display = "flex";
   caricaClassifica();
-});
+};
 
-document.getElementById("retry-btn").addEventListener("click", () => location.reload());
+document.getElementById("retry-btn").onclick = () => location.reload();
 </script>
-
-<!-- COUNTER DEV -->
-<script src="https://cdn.counter.dev/script.js"
-        data-id="9d666b79-dc20-433b-8015-ac699700813e"
-        data-utcoffset="1"></script>
 
 </body>
 </html>
+
