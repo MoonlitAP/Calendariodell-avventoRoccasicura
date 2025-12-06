@@ -2,18 +2,17 @@
 <html lang="it">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="viewport" content="width=device-width, maximum-scale=1.0">
 
 <title>🎄 Giorno 6 – Magia in Rosso</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;700&display=swap" rel="stylesheet">
 
+<!-- FIREBASE (COMPAT SDK) -->
 <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-database-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-storage-compat.js"></script>
 
 <style>
-/* ... (MANTENERE TUTTO LO STILE) ... */
 body {
   margin: 0;
   padding: 0;
@@ -48,7 +47,7 @@ body {
   border-radius: 12px;
   padding: 20px;
   width: 80%;
-  max-width: 400px; 
+  max-width: 400px;
   margin: 20px auto;
 }
 
@@ -58,7 +57,7 @@ body {
   grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
   gap: 10px;
   margin: 20px auto;
-  max-width: 900px; 
+  max-width: 900px;
 }
 
 .photo-item {
@@ -86,7 +85,7 @@ body {
     bottom: 0;
     left: 0;
     width: 100%;
-    background: rgba(123, 4, 18, 0.8); 
+    background: rgba(123, 4, 18, 0.8);
     color: #fff;
     font-size: 12px;
     padding: 4px 0;
@@ -100,6 +99,7 @@ body {
 
 <body>
 
+<!-- INTRO SCREEN -->
 <div id="intro" class="screen active">
   <h1 style="color:#ffd700; margin-top:40px;">🎄 6 dicembre – Adesso iniziamo!</h1>
 
@@ -120,16 +120,16 @@ body {
 
 
 
+<!-- UPLOAD SCREEN -->
 <div id="upload" class="screen">
   <h1 style="color:#ffd700; margin-top:30px;">Carica una foto!</h1>
-  <p id="welcome-message" style="font-size:1.1em; margin-top: -10px;"></p> 
+  <p id="welcome-message" style="font-size:1.1em; margin-top:-10px;"></p>
 
   <div class="upload-box">
     <p>Select the format</p>
     <p><b>Select image (Maximum: 10 MB)</b></p>
 
-    <input type="file" id="fileInput" accept="image/*"
-      style="margin-top:10px; font-size:16px;">
+    <input type="file" id="fileInput" accept="image/*" style="margin-top:10px; font-size:16px;">
   </div>
 
   <div id="uploadStatus" style="margin-top:20px; font-size:18px;"></div>
@@ -140,6 +140,7 @@ body {
 
 
 
+<!-- COLLAGE SCREEN -->
 <div id="collageScreen" class="screen">
   <h1 style="color:#ffd700; margin-top:20px;">✨ Galleria del 6 dicembre ✨</h1>
   <p style="margin-top:-10px;">La magia cresce con ogni foto caricata! 📸🔴</p>
@@ -150,17 +151,14 @@ body {
 </div>
 
 
-
 <script>
-/* ============================================================
-    FIREBASE INITIALIZATION
-============================================================ */
+/* FIREBASE INIT */
 const firebaseConfig = {
   apiKey: "AIzaSyBrI1yThI6zmnYwKE4OHbS8vhrUPrMsnsk",
   authDomain: "calendarioroccasicura.firebaseapp.com",
   databaseURL: "https://calendarioroccasicura-default-rtdb.europe-west1.firebasedatabase.app",
   projectId: "calendarioroccasicura",
-  storageBucket: "calendarioroccasicura.appspot.com", // Importante per lo Storage
+  storageBucket: "calendarioroccasicura.appspot.com",
   messagingSenderId: "38731898044",
   appId: "1:38731898044:web:e89bcfae7c64239fec44b9"
 };
@@ -168,23 +166,10 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 
 const db = firebase.database();
-const storage = firebase.storage(); // Inizializza lo Storage
-
 let userName = "";
-const MAX_FILE_SIZE_MB = 10; 
-
-// Carica il nome utente se già salvato in localStorage
-document.addEventListener('DOMContentLoaded', () => {
-    const savedUser = localStorage.getItem("utente");
-    if (savedUser) {
-        document.getElementById("username").value = savedUser;
-    }
-});
 
 
-/* ============================================================
-    NAVIGATION
-============================================================ */
+/* NAVIGATION */
 function goToUpload() {
   userName = document.getElementById("username").value.trim();
 
@@ -192,21 +177,16 @@ function goToUpload() {
     alert("Inserisci il tuo nome prima di procedere.");
     return;
   }
-  
-  // Salva il nome utente per sessioni future
-  localStorage.setItem("utente", userName); 
 
-  // Aggiorna il messaggio di benvenuto nella schermata di upload
-  document.getElementById("welcome-message").textContent = `Ciao, ${userName}! Pronti per caricare.`;
-  
-  // Navigazione
+  document.getElementById("welcome-message").textContent = `Ciao, ${userName}! Pronto per caricare.`;
+
   document.getElementById("intro").classList.remove("active");
   document.getElementById("upload").classList.add("active");
 }
 
 function goToUploadFromCollage() {
-    document.getElementById("collageScreen").classList.remove("active");
-    document.getElementById("upload").classList.add("active");
+  document.getElementById("collageScreen").classList.remove("active");
+  document.getElementById("upload").classList.add("active");
 }
 
 function showCollage() {
@@ -216,98 +196,76 @@ function showCollage() {
 }
 
 
-/* ============================================================
-    UPLOAD PHOTO A FIREBASE STORAGE (Versione Funzionante con token)
-============================================================ */
+/* PHOTO UPLOAD → BASE64 COMPRESSO */
 function uploadPhoto() {
-  const fileInput = document.getElementById("fileInput");
-  const file = fileInput.files[0];
-
+  const file = document.getElementById("fileInput").files[0];
   if (!file) {
     alert("Seleziona una foto!");
     return;
   }
-  
-  // Validazione dimensione file (Max 10MB)
-  if (file.size > MAX_FILE_SIZE_MB * 1024 * 1024) {
-      alert(`Il file è troppo grande. Dimensione massima consentita: ${MAX_FILE_SIZE_MB} MB.`);
-      fileInput.value = ''; 
-      return;
-  }
 
-  // Se Storage NON è attivo, questo punto fallirà con errore di servizio disabilitato.
-  document.getElementById("uploadStatus").innerHTML = "Caricamento in corso…";
+  document.getElementById("uploadStatus").innerHTML = "Elaborazione…";
 
-  // Genera una chiave univoca sia per il database che per lo storage
-  const photoId = db.ref().push().key; 
-  const storageRef = storage.ref("foto/giorno6/" + photoId + ".jpg");
-  const uploadTask = storageRef.put(file);
+  const reader = new FileReader();
+  reader.readAsDataURL(file);
 
-  uploadTask.on(
-    "state_changed",
-    (snapshot) => {
-      let p = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-      document.getElementById("uploadStatus").innerHTML = "Caricamento: " + Math.round(p) + "%";
-    },
+  reader.onload = function(event) {
+    const img = new Image();
+    img.src = event.target.result;
 
-    (error) => {
-      alert("Errore nel caricamento! Controlla se il servizio Storage è attivo.");
-      console.log(error);
-      document.getElementById("uploadStatus").innerHTML = "Caricamento fallito.";
-    },
+    img.onload = function() {
 
-    () => {
-      // ✅ Otteniamo l'URL di download con il token di accesso.
-      storageRef.getDownloadURL().then((url) => { 
-        
-        // Salva i metadati nel Realtime Database
-        db.ref("gallerie/giorno6/" + photoId).set({
-          nome: userName,
-          url: url, // Salviamo l'URL COMPLETO con il token.
-          timestamp: Date.now() 
-        });
+      /* Compress */
+      const canvas = document.createElement("canvas");
+      const MAX_WIDTH = 600;
+      const scale = MAX_WIDTH / img.width;
 
-        document.getElementById("uploadStatus").innerHTML =
-          "✨ Foto caricata! Apri la galleria!";
-          fileInput.value = ''; 
+      canvas.width = MAX_WIDTH;
+      canvas.height = img.height * scale;
+
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+      const compressedBase64 = canvas.toDataURL("image/jpeg", 0.7);
+
+      const photoId = db.ref().push().key;
+
+      db.ref("gallerie/giorno6/" + photoId).set({
+        nome: userName,
+        base64: compressedBase64,
+        timestamp: Date.now()
       });
-    }
-  );
+
+      document.getElementById("uploadStatus").innerHTML = "✨ Foto caricata!";
+      document.getElementById("fileInput").value = "";
+    };
+  };
 }
 
 
-/* ============================================================
-    LOAD COLLAGE
-============================================================ */
+/* LOAD COLLAGE */
 function loadCollage() {
   const collageBox = document.getElementById("collage");
   collageBox.innerHTML = "Caricamento immagini...";
 
-  // Listener Real-Time (.on)
   db.ref("gallerie/giorno6").orderByChild("timestamp").on("value", (snap) => {
     collageBox.innerHTML = "";
+
     let list = [];
-    
-    snap.forEach((child) => {
-      list.push(child.val());
-    });
-    
-    // Ordina in ordine DECRESCENTE (foto più recenti in alto)
+    snap.forEach(child => list.push(child.val()));
     list.reverse();
 
     if (list.length === 0) {
-        collageBox.innerHTML = "<p>Nessuna foto caricata. Sii il primo! 📸</p>";
-        return;
+      collageBox.innerHTML = "<p>Nessuna foto caricata. Sii il primo! 📸</p>";
+      return;
     }
 
-    list.forEach((data) => {
+    list.forEach(data => {
       const photoItem = document.createElement("div");
       photoItem.classList.add("photo-item");
 
       const img = document.createElement("img");
-      // Il browser usa l'URL con token (data.url) che è stato salvato.
-      img.src = data.url; 
-      img.alt = `Foto caricata da ${data.nome}`;
+      img.src = data.base64;
 
       const caption = document.createElement("div");
       caption.classList.add("caption");
@@ -319,12 +277,7 @@ function loadCollage() {
     });
   });
 }
-
 </script>
-
-<script src="https://cdn.counter.dev/script.js"
-        data-id="9d666b79-dc20-433b-8015-ac699700813e"
-        data-utcoffset="1"></script>
 
 </body>
 </html>
